@@ -1,8 +1,11 @@
+AGENTS.md
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
 
+.DS_Store
+**/.DS_Store
 # C extensions
 *.so
 
@@ -219,5 +222,14 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Local Qdrant data
+backend/data/qdrant/
+
+# Local SQLite data
+backend/data/*.db
+backend/data/*.db-*
+
+# macOS
+.DS_Store
 # Наше
 leads/

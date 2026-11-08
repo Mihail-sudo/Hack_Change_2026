@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv
+**/__pycache__
+**/*.py[cod]
+.DS_Store
+**/.DS_Store
+.env
+**/.env
+backend/data/qdrant
+**/*.egg-info
+backend/data/*.db
+backend/data/*.db-*
+.pytest_cache
+.ruff_cache
+.mypy_cache
