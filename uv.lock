@@ -55,7 +55,7 @@ wheels = [
 [[package]]
 name = "backend"
 version = "0.1.0"
-source = { virtual = "backend" }
+source = { editable = "backend" }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "openai" },
@@ -429,6 +429,12 @@ wheels = [
 name = "hack-change-2026"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "backend" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "backend", editable = "backend" }]
 
 [[package]]
 name = "httpcore"

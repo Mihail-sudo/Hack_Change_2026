@@ -221,3 +221,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local Qdrant data
+backend/data/qdrant/
+
+# macOS
+.DS_Store

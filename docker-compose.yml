@@ -1,0 +1,9 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: docker
+      CORS_ORIGINS: '["*"]'
+    restart: unless-stopped
