@@ -13,7 +13,7 @@
 **Цель:** проект, в котором удобно работать и людям, и Claude Code.
 
 - [x] Структура папок (см. `CLAUDE.md`): `agent/`, `prompts/` созданы пустыми (`.gitkeep`), `leads/` создаст `cli.py`
-- [ ] Git-репозиторий и доступ у всей команды (сейчас папка не под git)
+- [x] Git-репозиторий и доступ у всей команды (сейчас папка не под git)
 - [x] `.venv`, `requirements.txt` (`requests`, `playwright`)
 - [x] `.gitignore`: `.env`, `.venv/`, `leads/`, `__pycache__/`
 - [x] `.env.example` с `POLZA_AI_API_KEY=` и `LLM_MODEL=`
