@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock README.md ./
-COPY backend/pyproject.toml backend/README.md ./backend/
+COPY backend/pyproject.toml ./backend/
 RUN uv sync --frozen --no-dev --no-install-workspace
 
 COPY backend ./backend

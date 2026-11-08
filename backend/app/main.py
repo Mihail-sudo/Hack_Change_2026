@@ -1,14 +1,23 @@
 import logging
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app import db
 from app.api.router import api_router
 from app.config import Settings, get_settings
 
 
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
+    db.init_db()
+    yield
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -18,6 +27,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=settings.app_name,
         version=settings.app_version,
         description="Базовый backend на FastAPI.",
+        lifespan=lifespan,
     )
     application.add_middleware(
         CORSMiddleware,

@@ -225,5 +225,9 @@ __marimo__/
 # Local Qdrant data
 backend/data/qdrant/
 
+# Local SQLite data
+backend/data/*.db
+backend/data/*.db-*
+
 # macOS
 .DS_Store
