@@ -231,3 +231,5 @@ backend/data/*.db-*
 
 # macOS
 .DS_Store
+# Наше
+leads/
