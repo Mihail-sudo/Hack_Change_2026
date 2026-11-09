@@ -8,7 +8,7 @@
 
 ---
 
-## 🟨 Этап 0. Подготовка
+## ✅ Этап 0. Подготовка
 
 **Цель:** проект, в котором удобно работать и людям, и Claude Code.
 
@@ -27,14 +27,14 @@
 
 ---
 
-## ⬜ Этап 1. Минимальный чат
+## ✅ Этап 1. Минимальный чат
 
 **Цель:** сквозная цепочка «ввод → модель → ответ» в правильной форме.
 
-- [ ] `agent/llm.py`: `call_llm(messages, **params)`, ключ и модель из `.env`
-- [ ] `agent/agent.py`: `respond(message, state)` → `reply`, `state`, `actions`, `done`; история диалога в `state`
-- [ ] `cli.py`: цикл ввода и вывода; выполнение `actions` (запись лида в `leads/`)
-- [ ] `prompts/system.md`: простой промпт «ты консультант EnergyTool»
+- [x] `agent/llm.py`: `call_llm(messages, **params)`, ключ и модель из `.env`
+- [x] `agent/agent.py`: `respond(message, state)` → `reply`, `state`, `actions`, `done`; история диалога в `state`
+- [x] `cli.py`: цикл ввода и вывода; выполнение `actions` (запись лида в `leads/`)
+- [x] `prompts/system.md`: простой промпт «ты консультант EnergyTool»
 
 **Готово, когда:**
 - бот ведёт диалог и помнит сказанное раньше;
