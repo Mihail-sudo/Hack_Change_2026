@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS leads (
     name TEXT,
     contact TEXT NOT NULL,
     contact_type TEXT NOT NULL,
-    source_page TEXT,
     status TEXT NOT NULL,
     error TEXT
 );
@@ -47,8 +46,8 @@ def create_lead(data: LeadCreate, status: str = "new") -> int:
         cursor = connection.execute(
             """
             INSERT INTO leads
-                (created_at, question, name, contact, contact_type, source_page, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (created_at, question, name, contact, contact_type, status)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
             (
                 created_at,
@@ -56,7 +55,6 @@ def create_lead(data: LeadCreate, status: str = "new") -> int:
                 data.name,
                 data.contact,
                 data.contact_type,
-                data.source_page,
                 status,
             ),
         )

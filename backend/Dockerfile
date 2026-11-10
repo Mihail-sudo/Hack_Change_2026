@@ -12,6 +12,9 @@ COPY backend/pyproject.toml ./backend/
 RUN uv sync --frozen --no-dev --no-install-workspace
 
 COPY backend ./backend
+COPY agent ./agent
+COPY prompts ./prompts
+COPY data ./data
 RUN uv sync --frozen --no-dev
 
 ENV PATH="/app/.venv/bin:$PATH"

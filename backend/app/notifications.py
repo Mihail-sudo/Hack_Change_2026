@@ -23,8 +23,6 @@ def _format_message(lead_id: int, data: LeadCreate) -> str:
     if data.name:
         lines.append(f"Имя: {data.name}")
     lines.append(f"Контакт ({data.contact_type}): {data.contact}")
-    if data.source_page:
-        lines.append(f"Страница: {data.source_page}")
     return "\n".join(lines)
 
 
