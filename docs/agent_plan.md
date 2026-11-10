@@ -17,7 +17,7 @@
 - [x] `.venv`, `requirements.txt` (`requests`)
 - [x] `.gitignore`: `.env`, `.venv/`, `leads/`, `__pycache__/`
 - [x] `.env.example` с `POLZA_AI_API_KEY=` и `LLM_MODEL=`
-- [x] Данные в `data/`: `services/*.md` (собираются через Kimi Web), `shop/shop_clean.json` и `shop/shop_kb.md` (через `fetch_shop.py`). Единый `services_kb.md` не нужен: `load_catalog()` на этапе 2 соберёт базу из этих файлов
+- [x] Данные в `data/`: `services/*.md`, `shop/shop_clean.json` и `shop/shop_kb.md` (через `fetch_shop.py`). Единый `services_kb.md` не нужен: `load_catalog()` на этапе 2 соберёт базу из этих файлов
 - [x] Прогнать `python parsing/check_models.py <модели>`, выбрать модель, записать в `.env` (выбрана `deepseek-v4.1-flash`)
 - [x] Контракт: `docs/contract.md` v0.2 написан; детально не вычитывали, правим по ходу разработки
 
