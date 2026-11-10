@@ -20,8 +20,18 @@ import requests
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://polza.ai/api/v1"
-ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 TIMEOUT = 90
+
+
+def _find_env_file() -> Path:
+    for root in (PROJECT_DIR, PROJECT_DIR.parent):
+        if (root / ".git").exists() or (root / "docker-compose.yml").is_file():
+            return root / ".env"
+    return PROJECT_DIR / ".env"
+
+
+ENV_FILE = _find_env_file()
 
 
 class LLMError(RuntimeError):
