@@ -19,7 +19,7 @@
 docs/contract.md     стыки между агентом, API и фронтом. Источник правды по форматам
 docs/agent_plan.md   этапы разработки агента и их статусы
 data/                всё, что зависит от кейса: база знаний, каталог, сегменты
-  services/*.md      страницы услуг EnergyTool
+  services/*.md      страницы услуг EnergyTool (собираются через Kimi Web)
   shop/              каталог магазина: shop_kb.md, shop_clean.json, shop_raw.json (fetch_shop.py)
   segments.yaml      сегмент клиента → обязательные слоты (этап 3, делает Виталий)
 prompts/             тексты промптов, по файлу на промпт
@@ -70,6 +70,8 @@ python cli.py                      # чат с агентом в термина�
 python evals/run_evals.py          # прогон тестового стенда
 python parsing/fetch_shop.py       # обновить каталог магазина → data/shop/ (из любой папки)
 ```
+
+Для обновления страниц услуг используй `prompts/parse_energytool_site.md` в Kimi Web и сохрани полученные Markdown-файлы в `data/services/`.
 
 После правок промптов или логики агента прогоняй `evals/run_evals.py` и показывай результат: что стало лучше, что хуже. Правка, которая чинит один тест и ломает другие, — не улучшение.
 
