@@ -61,8 +61,5 @@
 8. https://energytool.mts.ru/mining → `mining.md`
 9. https://energytool.mts.ru/vodokanal → `vodokanal.md`
 10. https://energytool.mts.ru/metering-devices → `metering-devices.md`
-11. https://energytool.mts.ru/metering-devices/automatization → `metering-devices__automatization.md`
-12. https://energytool.mts.ru/termokontur → `termokontur.md`
-13. https://energytool.mts.ru/orem → `orem.md`
 
 Начни с первой страницы и подготовь файлы в указанном порядке.
