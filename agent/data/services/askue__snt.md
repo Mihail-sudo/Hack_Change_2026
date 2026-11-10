@@ -1,11 +1,11 @@
-# The URL you requested has been blocked
+# АСКУЭ для СНТ
 
 Источник: https://energytool.mts.ru/askue/snt
 
-block
-Web Page Blocked!
-The page cannot be displayed. Please contact the administrator for additional information.
-URL: energytool.mts.ru/askue/snt
-Client IP: 78.17.68.235
-Attack ID: 20000051
-Message ID: 001394314097
+## Возможности
+
+- Автоматически собирает показания счётчиков и передаёт их в правление СНТ.
+- Помогает бороться с хищениями электроэнергии, в том числе выявлять подключения в обход счётчика.
+- Позволяет правлению СНТ ограничивать потребление электроэнергии неплательщикам.
+
+Состав решения, стоимость и условия подключения уточняет менеджер.
