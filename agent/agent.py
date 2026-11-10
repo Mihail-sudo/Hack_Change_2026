@@ -1,7 +1,8 @@
 """Ответ на сообщение клиента. Контракт: respond(message, state) -> AgentResult.
 
-Этап 1: сквозная цепочка «ввод → модель → ответ» и память диалога.
-Слотов, сегментов, подбора продукта и лида пока нет — это этапы 3–5.
+Этапы 1–2: сквозная цепочка «ввод → модель → ответ», память диалога
+и локальная база знаний в системном промпте.
+Слотов, сегментов, управляемого подбора продукта и лида пока нет — это этапы 3–5.
 
 Правила из CLAUDE.md, которые важны именно в этом модуле:
 - нет print() и input(): ввод-вывод только в cli.py;
@@ -14,6 +15,7 @@ import logging
 from functools import lru_cache
 from pathlib import Path
 
+from agent.catalog import load_catalog
 from agent.llm import call_llm
 
 logger = logging.getLogger(__name__)
@@ -27,12 +29,14 @@ MAX_HISTORY_MESSAGES = 40
 
 @lru_cache(maxsize=1)
 def _system_prompt() -> str:
-    """Текст системного промпта. Читается один раз на процесс."""
+    """Системный промпт и каталог. Читаются один раз на процесс."""
     text = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8").strip()
     if not text:
         # Пустой промпт — это ошибка конфигурации, а не повод отвечать как попало.
         raise RuntimeError(f"Пустой системный промпт: {SYSTEM_PROMPT_FILE}")
-    return text
+    if "{catalog}" not in text:
+        raise RuntimeError(f"В системном промпте нет места для каталога: {SYSTEM_PROMPT_FILE}")
+    return text.replace("{catalog}", load_catalog(), 1)
 
 
 def _new_state() -> dict:

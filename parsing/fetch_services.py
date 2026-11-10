@@ -137,6 +137,8 @@ def main() -> None:
                 "text": main_text(page),
                 "faq": collect_faq(page),
             }
+            if item["title"] == "The URL you requested has been blocked" or "Web Page Blocked!" in item["text"]:
+                raise RuntimeError(f"Сайт вернул страницу блокировки, данные не сохранены: {url}")
             pages.append(item)
 
             md = [f"# {item['title']}", "", f"Источник: {url}", "", item["text"]]
