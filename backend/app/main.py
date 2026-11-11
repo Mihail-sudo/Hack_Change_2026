@@ -12,6 +12,8 @@ from app.config import Settings, get_settings
 from app.sessions import create_session_store
 
 
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+
 logger = logging.getLogger(__name__)
 
 
