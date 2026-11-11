@@ -1,0 +1,240 @@
+.chatWorkspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-bg);
+}
+
+.header {
+  padding: var(--space-4) var(--space-6);
+  padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.headerTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: #22c55e;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Метка демонстрационного режима (mock без реального ИИ) */
+.demoBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-warning);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.quickRepliesArea {
+  margin-bottom: var(--space-2);
+}
+
+.loadStatus {
+  padding: var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.headerSubtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.headerAction {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.headerAction:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-text-muted);
+}
+
+.headerAction:active {
+  background: var(--color-bg-secondary);
+}
+
+/* Icon-only navigation buttons (history / debug) — hidden on desktop */
+.navButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.navButton:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-text-muted);
+}
+
+.navButton:active {
+  background: var(--color-bg-secondary);
+}
+
+/* Desktop: history & debug panels are always visible — toggle buttons are redundant */
+@media (min-width: 1280px) {
+  .navButton {
+    display: none;
+  }
+}
+
+.messagesArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.composerArea {
+  padding: var(--space-4) var(--space-6);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.composerHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}
+
+/* Tablet: more space for chat, compact header */
+@media (max-width: 1279.98px) {
+  .header {
+    padding: var(--space-3) var(--space-4);
+    padding-top: calc(var(--space-3) + env(safe-area-inset-top));
+  }
+
+  .headerAction span {
+    display: none;
+  }
+
+  .headerAction {
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .messagesArea {
+    padding: var(--space-4);
+  }
+
+  .composerArea {
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Mobile: compact header, larger touch targets */
+@media (max-width: 767.98px) {
+  .headerTitle {
+    font-size: var(--text-base);
+  }
+
+  .headerSubtitle {
+    display: none;
+  }
+
+  .navButton,
+  .headerAction {
+    width: 44px;
+    height: 44px;
+  }
+
+  .messagesArea {
+    padding: var(--space-3);
+    gap: var(--space-4);
+  }
+
+  .composerArea {
+    padding: var(--space-2) var(--space-3);
+    padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  }
+
+  .composerHint {
+    display: none;
+  }
+}
