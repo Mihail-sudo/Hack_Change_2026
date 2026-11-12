@@ -112,7 +112,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         if action_type == "handover":
             action_type = "show_form"
         if action_type == "show_form":
-            reply = _contacts_request(slots)
+            reply = f"{reply}\n\n{_contacts_request(slots)}"
 
     form_shown = current["form_shown"] or action_type in {"show_form", "handover"}
     if action_type in {"show_form", "handover"}:
