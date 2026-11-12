@@ -6,9 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 
 from agent.catalog import search_catalog
-from agent.dialogue import RESPONSE_FORMAT, parse_response
+from agent.dialogue import RESPONSE_FORMAT, AgentResponseError, parse_response
 from agent.leads import build_lead, fallback_brief
-from agent.llm import call_llm
+from agent.llm import LLMError, call_llm
 from agent.recommendations import fallback_recommendation_reply, filter_recommendations
 from agent.state import contacts_complete, merge_slots, normalize_state
 
@@ -17,25 +17,86 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
 DIALOGUE_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "dialogue.md"
 MAX_HISTORY_MESSAGES = 40
+HUMAN_REQUEST_RE = re.compile(
+    r"(?:дай|позови(?:те)?|нужен|хочу|переключ\w*|свяж\w*|соедин\w*)[^.!?]*(?:человек|менеджер|оператор)|живого человека|живого менеджера",
+    re.IGNORECASE,
+)
+CONTACT_REFUSAL_RE = re.compile(
+    r"(?:не\s+(?:буду|хочу|надо|нужно)|без|откаж\w*)[^.!?]*(?:контакт|персональн|телефон)|не\s+оставл\w*\s+контакт",
+    re.IGNORECASE,
+)
+FORM_REQUEST_RE = re.compile(
+    r"(?:остав\w*\s+(?:заявк|контакт)|заполн\w*\s+форм|покаж\w*\s+форм|готов\w*\s+оставить)",
+    re.IGNORECASE,
+)
+PRODUCT_NAMES = {
+    "askue_cloud": "облачная платформа учёта",
+    "commercial_losses": "поиск коммерческих потерь",
+    "meter_photo": "распознавание показаний по фотографии",
+    "solar": "солнечная электростанция",
+    "orem": "сопровождение выхода на оптовый рынок",
+}
 
 
-def _contacts_request(slots: dict) -> str:
+def _contacts_request(slots: dict, *, operator: bool = False) -> str:
     labels = [
         label for name, label in (("full_name", "ФИО"), ("phone", "телефон"), ("company", "название компании"))
         if not slots.get(name)
     ]
+    prefix = "Хорошо, чтобы оператор связался с вами напрямую" if operator else "Чтобы передать заявку менеджеру"
     if not labels:
-        return "Чтобы передать заявку менеджеру, подтвердите согласие на обработку персональных данных."
+        return f"{prefix}, подтвердите согласие на обработку персональных данных."
     if len(labels) == 1:
         fields = labels[0]
     elif len(labels) == 2:
         fields = " и ".join(labels)
     else:
         fields = f"{', '.join(labels[:-1])} и {labels[-1]}"
-    request = f"Чтобы передать заявку менеджеру, укажите {fields}."
+    request = f"{prefix}, укажите {fields}."
     if slots.get("consent_pd") is not True:
         request += " Также подтвердите согласие на обработку персональных данных."
     return request
+
+
+def _has_contact_request(reply: str, slots: dict) -> bool:
+    text = reply.lower()
+    if slots.get("consent_pd") is not True and "соглас" not in text:
+        return False
+    for name, label in (("full_name", "фио"), ("phone", "телефон"), ("company", "компани")):
+        if not slots.get(name) and label not in text:
+            return False
+    return True
+
+
+def _form_ready(slots: dict) -> bool:
+    if not slots.get("organization_type") or not slots.get("task"):
+        return False
+    if "снт" in slots["organization_type"].lower() and not slots.get("metering_setup"):
+        return False
+    return True
+
+
+def _helpful_reply(recommended: list[dict], slots: dict, human_count: int = 0) -> str:
+    if recommended:
+        names = [PRODUCT_NAMES[item["product_id"]] for item in recommended]
+        if human_count == 1:
+            return f"Могу передать диалог менеджеру, но сначала попробую помочь сам. Для вашей задачи подходит {' и '.join(names)}. Подскажите, есть ли в домах приборы учёта?"
+        if human_count == 2:
+            return "Понимаю, что удобнее поговорить с человеком. Платформа как раз решает вашу задачу, а менеджер потом сможет рассчитать конфигурацию. Если приборов нет, начнём с их подбора и установки. Попробуем разобраться дальше или всё же перейти к контактам?"
+        reply = f"Для вашей задачи подходит {' и '.join(names)}."
+    elif human_count == 1:
+        return "Могу помочь разобраться с учётом и подобрать решение. Расскажите, какая у вас организация и какая задача?"
+    elif human_count == 2:
+        reply = "Понимаю, что удобнее сразу поговорить с человеком. Я всё же постараюсь помочь разобраться в задаче и подготовить предметный вопрос менеджеру."
+    else:
+        reply = "Я могу помочь подобрать решение EnergyTool по вашей задаче."
+    if not slots.get("organization_type"):
+        return f"{reply} Подскажите, какая у вас организация?"
+    if not slots.get("task"):
+        return f"{reply} Какую задачу вы хотите решить?"
+    if "снт" in slots["organization_type"].lower() and not slots.get("metering_setup"):
+        return f"{reply} Есть ли в домах приборы учёта и как вы сейчас снимаете показания?"
+    return f"{reply} Какие детали объекта нужно учесть при подборе?"
 
 
 @lru_cache(maxsize=1)
@@ -67,6 +128,19 @@ def _trim(history: list[dict]) -> list[dict]:
 
 def _sources(catalog: str) -> list[str]:
     return list(dict.fromkeys(re.findall(r"(?m)^Источник: (.+)$", catalog)))
+
+
+def _fallback(state: dict) -> dict:
+    state = {**state, "form_shown": True, "stage": "contacts"}
+    return {
+        "reply": "Извините, сейчас не получается ответить. Оставьте, пожалуйста, телефон, и менеджер свяжется с вами.",
+        "state": state,
+        "sources": [],
+        "recommended": state["recommended"],
+        "action": {"type": "show_form", "manager_brief": state["manager_brief"]},
+        "actions": [],
+        "done": False,
+    }
 
 
 def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dict:
@@ -105,7 +179,12 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         {"role": "system", "content": _system_prompt(catalog, system_prompt)},
         *visible_history,
     ]
-    parsed = parse_response(call_llm(messages, response_format=RESPONSE_FORMAT, temperature=0.2))
+    try:
+        content = call_llm(messages, response_format=RESPONSE_FORMAT, temperature=0.2)
+        parsed = parse_response(content)
+    except (LLMError, AgentResponseError) as exc:
+        logger.warning("Запасной ответ вместо ошибки модели: %s", exc)
+        return _fallback(current)
 
     slots = merge_slots(current["slots"], parsed["slots"])
     recommended, dropped = filter_recommendations(parsed["recommended"], slots)
@@ -118,13 +197,36 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         if not recommended and action_type in {"answer", "show_form"}:
             action_type = "clarify"
 
+    human_request = bool(HUMAN_REQUEST_RE.search(text))
+    contact_refusal = bool(CONTACT_REFUSAL_RE.search(text))
+    human_count = current["human_request_count"] + 1 if human_request else 0
+    form_requested = bool(FORM_REQUEST_RE.search(text))
+    allow_form = (
+        human_count >= 3
+        or form_requested
+        or (not human_request and action_type == "show_form" and _form_ready(slots))
+    )
+
     if contacts_complete(slots):
         action_type = "handover"
-    else:
-        if action_type == "handover":
-            action_type = "show_form"
-        if action_type == "show_form":
+    elif contact_refusal:
+        human_count = 0
+        action_type = "answer"
+        reply = "Понял. Без контактных данных оператор не сможет связаться с вами. Могу продолжить консультацию в чате, а если передумаете — помогу оформить заявку."
+    elif allow_form:
+        action_type = "show_form"
+        repeat_form = human_count > 3 and current["form_shown"] and slots == current["slots"]
+        if repeat_form:
+            reply = "Без контактных данных оператор не сможет связаться с вами. Заполните, пожалуйста, форму выше."
+        elif human_request and human_count >= 3:
+            reply = _contacts_request(slots, operator=True)
+        elif human_request:
+            reply = "Понимаю, вам удобнее поговорить с человеком."
+        if not repeat_form and not _has_contact_request(reply, slots):
             reply = f"{reply}\n\n{_contacts_request(slots)}"
+    elif human_request or action_type in {"show_form", "handover"}:
+        action_type = "answer" if recommended else "clarify"
+        reply = _helpful_reply(recommended, slots, human_count)
 
     form_shown = current["form_shown"] or action_type in {"show_form", "handover"}
     if action_type in {"show_form", "handover"}:
@@ -144,6 +246,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         "history": [*history, {"role": "assistant", "content": reply}],
         "slots": slots,
         "recommended": recommended,
+        "human_request_count": human_count,
         "stage": stage,
         "form_shown": form_shown,
         "manager_brief": brief,
