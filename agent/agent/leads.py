@@ -57,7 +57,7 @@ def build_lead(state: dict | None, contact: dict, source: str = "form") -> dict:
         "segment": _segment(slots.get("organization_type")),
         "problem": slots.get("task") or "",
         "slots": slots,
-        "recommended": [],
+        "recommended": list(state.get("recommended") or []),
         "summary": summary,
         "tags": [],
         "priority": "normal",
