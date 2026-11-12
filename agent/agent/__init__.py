@@ -1,11 +1,7 @@
-"""Пакет агента. Наружу — только функции из docs/contract.md.
-
-API не знает, как агент устроен внутри, и не читает state. Поэтому здесь
-экспортируется ровно то, что описано в контракте.
-
-build_lead появится на этапе 5 вместе со слотами и сегментами.
-"""
+"""Публичный интерфейс агента из docs/contract.md."""
 
 from agent.agent import respond
+from agent.client import LLMClient
+from agent.leads import build_lead
 
-__all__ = ["respond"]
+__all__ = ["respond", "build_lead", "LLMClient"]
