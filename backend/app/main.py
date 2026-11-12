@@ -9,19 +9,26 @@ from fastapi.responses import JSONResponse
 from app import db
 from app.api.router import api_router
 from app.config import Settings, get_settings
+from app.sessions import create_session_store
 
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
-    db.init_db()
-    yield
-
-
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
+        db.init_db()
+        session_store = create_session_store(settings)
+        application.state.session_store = session_store
+        try:
+            yield
+        finally:
+            await session_store.close()
 
     application = FastAPI(
         title=settings.app_name,
