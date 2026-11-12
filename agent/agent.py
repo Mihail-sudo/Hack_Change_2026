@@ -38,20 +38,21 @@ PRODUCT_NAMES = {
 }
 
 
-def _contacts_request(slots: dict) -> str:
+def _contacts_request(slots: dict, *, operator: bool = False) -> str:
     labels = [
         label for name, label in (("full_name", "ФИО"), ("phone", "телефон"), ("company", "название компании"))
         if not slots.get(name)
     ]
+    prefix = "Хорошо, чтобы оператор связался с вами напрямую" if operator else "Чтобы передать заявку менеджеру"
     if not labels:
-        return "Чтобы передать заявку менеджеру, подтвердите согласие на обработку персональных данных."
+        return f"{prefix}, подтвердите согласие на обработку персональных данных."
     if len(labels) == 1:
         fields = labels[0]
     elif len(labels) == 2:
         fields = " и ".join(labels)
     else:
         fields = f"{', '.join(labels[:-1])} и {labels[-1]}"
-    request = f"Чтобы передать заявку менеджеру, укажите {fields}."
+    request = f"{prefix}, укажите {fields}."
     if slots.get("consent_pd") is not True:
         request += " Также подтвердите согласие на обработку персональных данных."
     return request
@@ -78,9 +79,13 @@ def _form_ready(slots: dict) -> bool:
 def _helpful_reply(recommended: list[dict], slots: dict, human_count: int = 0) -> str:
     if recommended:
         names = [PRODUCT_NAMES[item["product_id"]] for item in recommended]
-        reply = f"Для вашей задачи подходит {' и '.join(names)}."
+        if human_count == 1:
+            return f"Могу передать диалог менеджеру, но сначала попробую помочь сам. Для вашей задачи подходит {' и '.join(names)}. Подскажите, есть ли в домах приборы учёта?"
         if human_count == 2:
-            reply += " Могу уточнить детали и подготовить предметный вопрос менеджеру."
+            return "Понимаю, что удобнее поговорить с человеком. Платформа как раз решает вашу задачу, а менеджер потом сможет рассчитать конфигурацию. Если приборов нет, начнём с их подбора и установки. Попробуем разобраться дальше или всё же перейти к контактам?"
+        reply = f"Для вашей задачи подходит {' и '.join(names)}."
+    elif human_count == 1:
+        return "Могу помочь разобраться с учётом и подобрать решение. Расскажите, какая у вас организация и какая задача?"
     elif human_count == 2:
         reply = "Понимаю, что удобнее сразу поговорить с человеком. Я всё же постараюсь помочь разобраться в задаче и подготовить предметный вопрос менеджеру."
     else:
@@ -210,9 +215,14 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         reply = "Понял. Без контактных данных оператор не сможет связаться с вами. Могу продолжить консультацию в чате, а если передумаете — помогу оформить заявку."
     elif allow_form:
         action_type = "show_form"
-        if human_request:
+        repeat_form = human_count > 3 and current["form_shown"] and slots == current["slots"]
+        if repeat_form:
+            reply = "Без контактных данных оператор не сможет связаться с вами. Заполните, пожалуйста, форму выше."
+        elif human_request and human_count >= 3:
+            reply = _contacts_request(slots, operator=True)
+        elif human_request:
             reply = "Понимаю, вам удобнее поговорить с человеком."
-        if not _has_contact_request(reply, slots):
+        if not repeat_form and not _has_contact_request(reply, slots):
             reply = f"{reply}\n\n{_contacts_request(slots)}"
     elif human_request or action_type in {"show_form", "handover"}:
         action_type = "answer" if recommended else "clarify"
