@@ -1,13 +1,4 @@
-"""Вызов модели. Единственное место, где знаем про провайдера LLM (polza.ai).
-
-Правила из CLAUDE.md:
-- нигде больше не импортируем SDK и не называем модель;
-- ключ и модель берём из .env (или окружения), в коде и логах их нет;
-- рассуждения отключены всегда: с ними запрос идёт ~30 с вместо ~1,6 с.
-
-Ошибки не глотаем и не превращаем в текст ответа: бросаем LLMError, а как
-реагировать, решает вызывающий (API отдаёт запасную фразу, cli.py печатает).
-"""
+"""Вызов модели. Единственное место, где знаем про провайдера LLM (polza.ai)."""
 
 import logging
 import os
@@ -21,7 +12,9 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://polza.ai/api/v1"
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-TIMEOUT = 90
+TIMEOUT = 20
+MAX_ATTEMPTS = 3
+RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 
 def _find_env_file() -> Path:
@@ -63,38 +56,46 @@ def _settings() -> tuple[str, str]:
     return key, model
 
 
+def _post(payload: dict, key: str) -> requests.Response:
+    for attempt in range(MAX_ATTEMPTS):
+        started = time.time()
+        try:
+            response = requests.post(
+                f"{BASE_URL}/chat/completions",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=TIMEOUT,
+            )
+        except requests.RequestException as exc:
+            if attempt + 1 >= MAX_ATTEMPTS:
+                raise LLMError(f"Сеть недоступна после {MAX_ATTEMPTS} попыток: {exc}") from exc
+            delay = 0.5 * (2 ** attempt)
+            logger.warning("Ошибка сети LLM, повтор через %.1f с: %s", delay, exc)
+            time.sleep(delay)
+            continue
+
+        logger.info("LLM ответила за %.1f с, статус %s", time.time() - started, response.status_code)
+        if response.status_code == 200:
+            return response
+        if response.status_code not in RETRY_STATUSES or attempt + 1 >= MAX_ATTEMPTS:
+            raise LLMError(f"API вернул {response.status_code}: {response.text[:300]}")
+        delay = 0.5 * (2 ** attempt)
+        logger.warning("Временная ошибка LLM %s, повтор через %.1f с", response.status_code, delay)
+        time.sleep(delay)
+
+    raise LLMError("Модель недоступна")
+
+
 def call_llm(messages: list[dict], **params) -> str:
-    """Отправить сообщения модели и вернуть текст ответа.
-
-    messages — список словарей {"role": ..., "content": ...} в формате OpenAI.
-    params — дополнительные поля запроса (temperature, response_format, ...).
-    Режим рассуждений задаётся здесь и через params не переопределяется.
-    """
+    """Отправить сообщения модели и вернуть текст ответа."""
     key, model = _settings()
-
     payload = {
         "model": model,
         "messages": messages,
         "reasoning": {"enabled": False},
         **{k: v for k, v in params.items() if k != "reasoning"},
     }
-
-    started = time.time()
-    try:
-        response = requests.post(
-            f"{BASE_URL}/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=TIMEOUT,
-        )
-    except requests.RequestException as exc:
-        raise LLMError(f"Сеть недоступна: {exc}") from exc
-
-    logger.info("LLM ответила за %.1f с, статус %s", time.time() - started, response.status_code)
-
-    if response.status_code != 200:
-        # Тело может содержать подсказку провайдера (лимит, отозванный ключ), но не ключ.
-        raise LLMError(f"API вернул {response.status_code}: {response.text[:300]}")
+    response = _post(payload, key)
 
     try:
         message = response.json()["choices"][0]["message"]
