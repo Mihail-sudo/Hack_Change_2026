@@ -10,11 +10,13 @@ import tempfile
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 from pathlib import Path
 
 FALLBACK_ANSWER = "Извините, сейчас не получается ответить. Оставьте, пожалуйста, телефон, и менеджер свяжется с вами."
 MAX_ANSWER_CHARS = 10_000
 TOTAL_TIMEOUT_SECONDS = 20 * 60
+SOLUTION_PROMPT_FILE = Path(__file__).resolve().parent / "prompts" / "solution.md"
 logger = logging.getLogger("solution")
 
 
@@ -68,11 +70,51 @@ def prepare_data(data_dir: Path) -> Path | None:
     return work_dir
 
 
-def answer_question(row: dict, respond) -> dict:
+@lru_cache(maxsize=1)
+def solution_prompt() -> str:
+    try:
+        from prompts import SOLUTION_PROMPT
+        return SOLUTION_PROMPT
+    except ImportError:
+        return SOLUTION_PROMPT_FILE.read_text(encoding="utf-8")
+
+
+def _photo_question_without_organization(query: str) -> bool:
+    text = query.lower()
+    if "фото" not in text or "показан" not in text:
+        return False
+    if not any(word in text for word in ("можно", "может", "могу", "передать", "отправить", "прислать")):
+        return False
+    return not any(
+        word in text for word in ("организац", "компани", "снт", "предприят", "завод", "энергосбыт", "сетев", "тсж", "управляющ")
+    )
+
+
+def answer_with_context(history: list[dict], message: str) -> str:
+    from agent.catalog import search_catalog
+    from agent.llm import call_llm
+
+    visible = [item for item in history if item.get("role") in {"user", "assistant"}][-5:]
+    query = "\n".join([item["content"] for item in visible] + [message])
+    if _photo_question_without_organization(query):
+        return (
+            "Передавать показания по фото можно через Telegram-бот организации, внедрившей это решение. "
+            "Если вы имеете в виду прямую передачу МТС без организации, такой сценарий не предусмотрен. "
+            "МТС не является энергосбытовой компанией. Показание попадает в учёт только после верификации."
+        )
+    catalog = search_catalog(query)
+    messages = [
+        {"role": "system", "content": solution_prompt().replace("{catalog}", catalog, 1)},
+        *visible,
+        {"role": "user", "content": message},
+    ]
+    return call_llm(messages, temperature=float(os.environ.get("TEMPERATURE", "0.2"))).strip()
+
+
+def answer_question(row: dict) -> dict:
     history, message = parse_question(row["question"])
     try:
-        result = respond(message, {"history": history})
-        answer = result["reply"].strip()
+        answer = answer_with_context(history, message)
     except Exception as exc:
         logger.error("Вопрос %s: %s", row["id"], exc)
         answer = FALLBACK_ANSWER
@@ -114,15 +156,13 @@ def main() -> int:
     questions = read_questions(data_dir)
     work_dir = prepare_data(data_dir)
     try:
-        from agent import respond
-
         started = time.monotonic()
         workers = max(1, min(8, int(os.environ.get("MAX_WORKERS", "1"))))
         if workers == 1:
-            answers = [answer_question(row, respond) for row in questions]
+            answers = [answer_question(row) for row in questions]
         else:
             with ThreadPoolExecutor(max_workers=workers) as executor:
-                answers = list(executor.map(lambda row: answer_question(row, respond), questions))
+                answers = list(executor.map(answer_question, questions))
         if time.monotonic() - started > TOTAL_TIMEOUT_SECONDS:
             raise TimeoutError("Превышен общий лимит выполнения 20 минут")
         path = write_submission(answers, [row["id"] for row in questions])

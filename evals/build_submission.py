@@ -24,8 +24,11 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="submission-build-") as directory:
         build = Path(directory)
-        for name in ["solution.py", "requirements.txt"]:
-            (build / name).write_bytes((ROOT / name).read_bytes())
+        (build / "requirements.txt").write_bytes((ROOT / "requirements.txt").read_bytes())
+        (build / "solution.py").write_text(
+            (ROOT / "solution.py").read_text(encoding="utf-8").replace("from agent.", "from "),
+            encoding="utf-8",
+        )
         for name in AGENT_MODULES:
             source = (ROOT / "agent" / name).read_text(encoding="utf-8")
             source = source.replace("from agent.", "from ")
@@ -48,7 +51,8 @@ def main() -> None:
 
         prompts = (
             f"SYSTEM_PROMPT = {(ROOT / 'prompts' / 'system.md').read_text(encoding='utf-8')!r}\n\n"
-            f"DIALOGUE_PROMPT = {(ROOT / 'prompts' / 'dialogue.md').read_text(encoding='utf-8')!r}\n"
+            f"DIALOGUE_PROMPT = {(ROOT / 'prompts' / 'dialogue.md').read_text(encoding='utf-8')!r}\n\n"
+            f"SOLUTION_PROMPT = {(ROOT / 'prompts' / 'solution.md').read_text(encoding='utf-8')!r}\n"
         )
         (build / "prompts.py").write_text(prompts, encoding="utf-8")
 
