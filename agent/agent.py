@@ -29,6 +29,13 @@ FORM_REQUEST_RE = re.compile(
     r"(?:остав\w*\s+(?:заявк|контакт)|заполн\w*\s+форм|покаж\w*\s+форм|готов\w*\s+оставить)",
     re.IGNORECASE,
 )
+PRODUCT_NAMES = {
+    "askue_cloud": "облачная платформа учёта",
+    "commercial_losses": "поиск коммерческих потерь",
+    "meter_photo": "распознавание показаний по фотографии",
+    "solar": "солнечная электростанция",
+    "orem": "сопровождение выхода на оптовый рынок",
+}
 
 
 def _contacts_request(slots: dict) -> str:
@@ -70,7 +77,10 @@ def _form_ready(slots: dict) -> bool:
 
 def _helpful_reply(recommended: list[dict], slots: dict, human_count: int = 0) -> str:
     if recommended:
-        reply = "; ".join(item["reason"] for item in recommended)
+        names = [PRODUCT_NAMES[item["product_id"]] for item in recommended]
+        reply = f"Для вашей задачи подходит {' и '.join(names)}."
+        if human_count == 2:
+            reply += " Могу уточнить детали и подготовить предметный вопрос менеджеру."
     elif human_count == 2:
         reply = "Понимаю, что удобнее сразу поговорить с человеком. Я всё же постараюсь помочь разобраться в задаче и подготовить предметный вопрос менеджеру."
     else:
@@ -197,7 +207,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
     elif contact_refusal:
         human_count = 0
         action_type = "answer"
-        reply = "Понял, не буду настаивать на контактах. Если захотите поговорить с оператором, используйте кнопку «Связаться с менеджером»."
+        reply = "Понял. Без контактных данных оператор не сможет связаться с вами. Могу продолжить консультацию в чате, а если передумаете — помогу оформить заявку."
     elif allow_form:
         action_type = "show_form"
         if human_request:
