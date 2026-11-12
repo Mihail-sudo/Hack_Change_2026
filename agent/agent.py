@@ -16,10 +16,23 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
 DIALOGUE_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "dialogue.md"
 MAX_HISTORY_MESSAGES = 40
-CONTACTS_REQUEST = (
-    "Чтобы передать заявку менеджеру, укажите ФИО, телефон и название компании. "
-    "Также подтвердите согласие на обработку персональных данных."
-)
+def _contacts_request(slots: dict) -> str:
+    labels = [
+        label for name, label in (("full_name", "ФИО"), ("phone", "телефон"), ("company", "название компании"))
+        if not slots.get(name)
+    ]
+    if not labels:
+        return "Чтобы передать заявку менеджеру, подтвердите согласие на обработку персональных данных."
+    if len(labels) == 1:
+        fields = labels[0]
+    elif len(labels) == 2:
+        fields = " и ".join(labels)
+    else:
+        fields = f"{', '.join(labels[:-1])} и {labels[-1]}"
+    request = f"Чтобы передать заявку менеджеру, укажите {fields}."
+    if slots.get("consent_pd") is not True:
+        request += " Также подтвердите согласие на обработку персональных данных."
+    return request
 
 
 @lru_cache(maxsize=1)
@@ -95,9 +108,11 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
     brief = parsed.get("manager_brief") or current["manager_brief"]
     if contacts_complete(slots):
         action_type = "handover"
-    elif action_type == "handover":
-        action_type = "show_form"
-        reply = CONTACTS_REQUEST
+    else:
+        if action_type == "handover":
+            action_type = "show_form"
+        if action_type == "show_form":
+            reply = _contacts_request(slots)
 
     form_shown = current["form_shown"] or action_type in {"show_form", "handover"}
     if action_type in {"show_form", "handover"}:
