@@ -197,6 +197,12 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         brief = fallback_brief(slots)
         if not recommended and action_type in {"answer", "show_form"}:
             action_type = "clarify"
+    if any(item["product_id"] == "meter_photo" for item in recommended) and not slots.get("organization_type"):
+        reply = (
+            "Нет, для частного абонента такой передачи показаний через МТС нет. "
+            "Распознавание показаний по фотографии — решение для организаций, "
+            "а показание попадает в учёт только после верификации."
+        )
 
     human_request = bool(HUMAN_REQUEST_RE.search(text))
     contact_refusal = bool(CONTACT_REFUSAL_RE.search(text))
