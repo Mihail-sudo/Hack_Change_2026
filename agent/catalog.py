@@ -2,6 +2,7 @@
 
 import logging
 import math
+import os
 import re
 from collections import Counter
 from functools import lru_cache
@@ -9,7 +10,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(os.environ.get("ENERGYTOOL_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
 KB_DIR = DATA_DIR / "knowledge-base"
 INVALID_CONTENT_MARKERS = (
     "The URL you requested has been blocked",
@@ -118,8 +119,9 @@ def load_catalog() -> str:
     return "\n\n---\n\n".join(sections)
 
 
-def search_catalog(query: str, limit: int = MAX_CHUNKS) -> str:
+def search_catalog(query: str, limit: int | None = None) -> str:
     """Найти релевантные разделы и обязательные правила без обращения к LLM."""
+    limit = int(os.environ.get("TOP_K", MAX_CHUNKS)) if limit is None else limit
     chunks = _chunks()
     query_terms = set(_terms(query))
     selected = [chunk for chunk in chunks if chunk["source"] in ALWAYS_INCLUDE]

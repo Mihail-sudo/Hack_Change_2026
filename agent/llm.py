@@ -1,4 +1,4 @@
-"""Вызов модели. Единственное место, где знаем про провайдера LLM (polza.ai)."""
+"""Вызов OpenAI-совместимой LLM через Polza или API организаторов."""
 
 import logging
 import os
@@ -24,18 +24,26 @@ def _find_env_file() -> Path:
     return PROJECT_DIR / ".env"
 
 
-ENV_FILE = _find_env_file()
+ENV_FILE = Path(os.environ["ENERGYTOOL_ENV_FILE"]) if os.environ.get("ENERGYTOOL_ENV_FILE") else _find_env_file()
 
 
 class LLMError(RuntimeError):
     """Модель недоступна или вернула ответ, который нельзя использовать."""
 
 
+def _environment(*names: str) -> str:
+    for name in names:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
+
+
 @lru_cache(maxsize=1)
-def _settings() -> tuple[str, str]:
-    """Ключ и модель. Окружение важнее .env. Кешируется на процесс."""
-    key = os.environ.get("POLZA_AI_API_KEY", "")
-    model = os.environ.get("LLM_MODEL", "")
+def _settings() -> tuple[str, str, str]:
+    base_url = _environment("LLM_BASE_URL", "OPENAI_BASE_URL")
+    key = _environment("LLM_API_KEY", "OPENAI_API_KEY", "POLZA_AI_API_KEY")
+    model = _environment("LLM_MODEL", "OPENAI_MODEL", "GEN_MODEL")
 
     if ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
@@ -43,25 +51,28 @@ def _settings() -> tuple[str, str]:
             if not line or line.startswith("#") or "=" not in line:
                 continue
             name, value = line.split("=", 1)
+            name = name.strip()
             value = value.strip().strip('"').strip("'")
-            if name.strip() == "POLZA_AI_API_KEY" and not key:
+            if name in {"LLM_BASE_URL", "OPENAI_BASE_URL"} and not base_url:
+                base_url = value
+            elif name in {"LLM_API_KEY", "OPENAI_API_KEY", "POLZA_AI_API_KEY"} and not key:
                 key = value
-            elif name.strip() == "LLM_MODEL" and not model:
+            elif name in {"LLM_MODEL", "OPENAI_MODEL", "GEN_MODEL"} and not model:
                 model = value
 
     if not key:
-        raise LLMError("Не задан POLZA_AI_API_KEY (в .env или в окружении)")
+        raise LLMError("Не задан LLM_API_KEY, OPENAI_API_KEY или POLZA_AI_API_KEY")
     if not model:
-        raise LLMError("Не задан LLM_MODEL (в .env или в окружении)")
-    return key, model
+        raise LLMError("Не задан LLM_MODEL, OPENAI_MODEL или GEN_MODEL")
+    return base_url or BASE_URL, key, model
 
 
-def _post(payload: dict, key: str) -> requests.Response:
+def _post(payload: dict, key: str, base_url: str) -> requests.Response:
     for attempt in range(MAX_ATTEMPTS):
         started = time.time()
         try:
             response = requests.post(
-                f"{BASE_URL}/chat/completions",
+                f"{base_url.rstrip('/')}/chat/completions",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                 json=payload,
                 timeout=TIMEOUT,
@@ -88,15 +99,17 @@ def _post(payload: dict, key: str) -> requests.Response:
 
 def call_llm(messages: list[dict], **params) -> str:
     """Отправить сообщения модели и вернуть текст ответа."""
-    key, model = _settings()
-    payload = {
-        "model": model,
-        "messages": messages,
-        "reasoning": {"enabled": False},
-        **{k: v for k, v in params.items() if k != "reasoning"},
-    }
-    response = _post(payload, key)
+    base_url, key, model = _settings()
+    payload = {"model": model, "messages": messages}
+    if not _environment("LLM_BASE_URL", "OPENAI_BASE_URL"):
+        payload["reasoning"] = {"enabled": False}
+    if _environment("TEMPERATURE") and "temperature" not in params:
+        payload["temperature"] = float(_environment("TEMPERATURE"))
+    if _environment("MAX_TOKENS") and "max_tokens" not in params:
+        payload["max_tokens"] = int(_environment("MAX_TOKENS"))
+    payload.update({k: v for k, v in params.items() if k != "reasoning"})
 
+    response = _post(payload, key, base_url)
     try:
         message = response.json()["choices"][0]["message"]
     except (ValueError, KeyError, IndexError) as exc:
