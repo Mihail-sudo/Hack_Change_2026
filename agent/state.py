@@ -23,6 +23,7 @@ def new_state() -> dict:
         "history": [],
         "slots": {name: None for name in SLOT_TYPES},
         "recommended": [],
+        "human_request_count": 0,
         "stage": "discovery",
         "form_shown": False,
         "manager_brief": None,
@@ -39,6 +40,7 @@ def normalize_state(state: dict | None) -> dict:
         name: value for name, value in (state.get("slots") or {}).items() if name in SLOT_TYPES
     })
     normalized["recommended"] = list(state.get("recommended") or [])
+    normalized["human_request_count"] = int(state.get("human_request_count", 0) or 0)
     normalized["stage"] = state.get("stage") or "discovery"
     normalized["form_shown"] = bool(state.get("form_shown", False))
     normalized["manager_brief"] = state.get("manager_brief")

@@ -25,6 +25,10 @@ CONTACT_REFUSAL_RE = re.compile(
     r"(?:не\s+(?:буду|хочу|надо|нужно)|без|откаж\w*)[^.!?]*(?:контакт|персональн|телефон)|не\s+оставл\w*\s+контакт",
     re.IGNORECASE,
 )
+FORM_REQUEST_RE = re.compile(
+    r"(?:остав\w*\s+(?:заявк|контакт)|заполн\w*\s+форм|покаж\w*\s+форм|готов\w*\s+оставить)",
+    re.IGNORECASE,
+)
 
 
 def _contacts_request(slots: dict) -> str:
@@ -54,6 +58,30 @@ def _has_contact_request(reply: str, slots: dict) -> bool:
         if not slots.get(name) and label not in text:
             return False
     return True
+
+
+def _form_ready(slots: dict) -> bool:
+    if not slots.get("organization_type") or not slots.get("task"):
+        return False
+    if "снт" in slots["organization_type"].lower() and not slots.get("metering_setup"):
+        return False
+    return True
+
+
+def _helpful_reply(recommended: list[dict], slots: dict, human_count: int = 0) -> str:
+    if recommended:
+        reply = "; ".join(item["reason"] for item in recommended)
+    elif human_count == 2:
+        reply = "Понимаю, что удобнее сразу поговорить с человеком. Я всё же постараюсь помочь разобраться в задаче и подготовить предметный вопрос менеджеру."
+    else:
+        reply = "Я могу помочь подобрать решение EnergyTool по вашей задаче."
+    if not slots.get("organization_type"):
+        return f"{reply} Подскажите, какая у вас организация?"
+    if not slots.get("task"):
+        return f"{reply} Какую задачу вы хотите решить?"
+    if "снт" in slots["organization_type"].lower() and not slots.get("metering_setup"):
+        return f"{reply} Есть ли в домах приборы учёта и как вы сейчас снимаете показания?"
+    return f"{reply} Какие детали объекта нужно учесть при подборе?"
 
 
 @lru_cache(maxsize=1)
@@ -154,19 +182,31 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         if not recommended and action_type in {"answer", "show_form"}:
             action_type = "clarify"
 
+    human_request = bool(HUMAN_REQUEST_RE.search(text))
+    contact_refusal = bool(CONTACT_REFUSAL_RE.search(text))
+    human_count = current["human_request_count"] + 1 if human_request else 0
+    form_requested = bool(FORM_REQUEST_RE.search(text))
+    allow_form = (
+        human_count >= 3
+        or form_requested
+        or (not human_request and action_type == "show_form" and _form_ready(slots))
+    )
+
     if contacts_complete(slots):
         action_type = "handover"
-    elif HUMAN_REQUEST_RE.search(text):
-        action_type = "show_form"
-        reply = f"Передам вашу заявку менеджеру.\n\n{_contacts_request(slots)}"
-    elif CONTACT_REFUSAL_RE.search(text):
+    elif contact_refusal:
+        human_count = 0
         action_type = "answer"
-        reply = "Понял, контакты не требуются. Продолжу консультацию без передачи заявки менеджеру."
-    else:
-        if action_type == "handover":
-            action_type = "show_form"
-        if action_type == "show_form" and not _has_contact_request(reply, slots):
+        reply = "Понял, не буду настаивать на контактах. Если захотите поговорить с оператором, используйте кнопку «Связаться с менеджером»."
+    elif allow_form:
+        action_type = "show_form"
+        if human_request:
+            reply = "Понимаю, вам удобнее поговорить с человеком."
+        if not _has_contact_request(reply, slots):
             reply = f"{reply}\n\n{_contacts_request(slots)}"
+    elif human_request or action_type in {"show_form", "handover"}:
+        action_type = "answer" if recommended else "clarify"
+        reply = _helpful_reply(recommended, slots, human_count)
 
     form_shown = current["form_shown"] or action_type in {"show_form", "handover"}
     if action_type in {"show_form", "handover"}:
@@ -186,6 +226,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         "history": [*history, {"role": "assistant", "content": reply}],
         "slots": slots,
         "recommended": recommended,
+        "human_request_count": human_count,
         "stage": stage,
         "form_shown": form_shown,
         "manager_brief": brief,
