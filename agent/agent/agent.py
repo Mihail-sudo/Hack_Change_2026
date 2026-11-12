@@ -1,7 +1,7 @@
 """Ответ на сообщение клиента. Контракт: respond(message, state) -> AgentResult.
 
 Этапы 1–2: сквозная цепочка «ввод → модель → ответ», память диалога
-и локальная база знаний в системном промпте.
+и полнотекстовый поиск по официальной базе знаний.
 Слотов, сегментов, управляемого подбора продукта и лида пока нет — это этапы 3–5.
 
 Правила из CLAUDE.md, которые важны именно в этом модуле:
@@ -15,7 +15,7 @@ import logging
 from functools import lru_cache
 from pathlib import Path
 
-from agent.catalog import load_catalog
+from agent.catalog import search_catalog
 from agent.llm import call_llm
 
 logger = logging.getLogger(__name__)
@@ -28,15 +28,17 @@ MAX_HISTORY_MESSAGES = 40
 
 
 @lru_cache(maxsize=1)
-def _system_prompt() -> str:
-    """Системный промпт и каталог. Читаются один раз на процесс."""
+def _system_prompt_template() -> str:
     text = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8").strip()
     if not text:
-        # Пустой промпт — это ошибка конфигурации, а не повод отвечать как попало.
         raise RuntimeError(f"Пустой системный промпт: {SYSTEM_PROMPT_FILE}")
     if "{catalog}" not in text:
         raise RuntimeError(f"В системном промпте нет места для каталога: {SYSTEM_PROMPT_FILE}")
-    return text.replace("{catalog}", load_catalog(), 1)
+    return text
+
+
+def _system_prompt(catalog: str) -> str:
+    return _system_prompt_template().replace("{catalog}", catalog, 1)
 
 
 def _new_state() -> dict:
@@ -70,8 +72,11 @@ def respond(message: str, state: dict | None) -> dict:
         return {"reply": "Напишите, пожалуйста, ваш вопрос.", "state": state, "actions": [], "done": False}
 
     history.append({"role": "user", "content": text})
+    visible_history = _trim(history)
+    query = "\n".join(item["content"] for item in visible_history[-6:])
+    catalog = search_catalog(query)
 
-    messages = [{"role": "system", "content": _system_prompt()}, *_trim(history)]
+    messages = [{"role": "system", "content": _system_prompt(catalog)}, *visible_history]
     reply = call_llm(messages).strip()
 
     history.append({"role": "assistant", "content": reply})
