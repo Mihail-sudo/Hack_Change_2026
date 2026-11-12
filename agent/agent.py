@@ -9,7 +9,7 @@ from agent.catalog import search_catalog
 from agent.dialogue import RESPONSE_FORMAT, AgentResponseError, parse_response
 from agent.leads import build_lead, fallback_brief
 from agent.llm import LLMError, call_llm
-from agent.recommendations import fallback_recommendation_reply, filter_recommendations
+from agent.recommendations import fallback_recommendation_reply, filter_recommendations, infer_recommendations
 from agent.state import contacts_complete, merge_slots, normalize_state
 
 logger = logging.getLogger(__name__)
@@ -187,9 +187,10 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         return _fallback(current)
 
     slots = merge_slots(current["slots"], parsed["slots"])
-    recommended, dropped = filter_recommendations(parsed["recommended"], slots)
     action_type = parsed["action"]
     reply = parsed["reply"]
+    suggested = parsed["recommended"] or infer_recommendations(reply, slots)
+    recommended, dropped = filter_recommendations(suggested, slots)
     brief = parsed.get("manager_brief") or current["manager_brief"]
     if dropped:
         reply = fallback_recommendation_reply(recommended, dropped, slots)

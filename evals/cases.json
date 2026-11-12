@@ -1,0 +1,48 @@
+[
+  {
+    "id": "snt-metering",
+    "question": "Мы СНТ на 120 домов. Хотим видеть расход по каждому дому и бороться с неплательщиками.",
+    "required": ["платформ"],
+    "forbidden_products": ["commercial_losses"]
+  },
+  {
+    "id": "orem-too-small",
+    "question": "У производства 500 кВт. Можем выйти на ОРЭМ?",
+    "required": ["750"],
+    "required_any": ["невозмож", "нельзя", "нет"],
+    "forbidden_products": ["orem"]
+  },
+  {
+    "id": "orem-intermediary",
+    "question": "У производства 2 МВт. Хотим снизить закупку через ОРЭМ.",
+    "required": ["посредник"],
+    "expected_products": ["orem"]
+  },
+  {
+    "id": "solar-autonomy",
+    "question": "Нужна солнечная станция, чтобы производство работало при отключении внешней сети.",
+    "required": ["гибрид"],
+    "expected_products": ["solar"]
+  },
+  {
+    "id": "meter-photo",
+    "question": "Можно ли передавать показания электросчётчиков по фото?",
+    "required": ["фото"],
+    "expected_products": ["meter_photo"]
+  },
+  {
+    "id": "out-of-scope",
+    "question": "Вы продаёте квадрокоптеры?",
+    "required": ["вне моей компетенции"],
+    "expected_action": "out_of_scope"
+  },
+  {
+    "id": "solar-price-history",
+    "history": [
+      {"role": "user", "content": "Расскажите о солнечных станциях для бизнеса"},
+      {"role": "assistant", "content": "Для бизнеса доступны сетевые и гибридные солнечные станции."}
+    ],
+    "question": "А сколько ориентировочно стоит сетевая станция?",
+    "required": ["70"]
+  }
+]

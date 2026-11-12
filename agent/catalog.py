@@ -17,7 +17,6 @@ INVALID_CONTENT_MARKERS = (
     "You need to enable JavaScript to run this app",
 )
 ALWAYS_INCLUDE = {
-    "00-reference/00-product-map.md",
     "00-reference/02-product-scope-and-limits.md",
 }
 MAX_CHUNKS = 6

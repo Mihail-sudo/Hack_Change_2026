@@ -3,6 +3,25 @@
 ALLOWED_PRODUCTS = {"askue_cloud", "commercial_losses", "meter_photo", "solar", "orem"}
 
 
+def infer_recommendations(reply: str, slots: dict) -> list[dict]:
+    text = reply.lower()
+    reason = reply.split("?", 1)[0].strip()
+    inferred = []
+    power = slots.get("power_kw")
+    if power is not None and power >= 750 and any(word in text for word in ("орэм", "оптовый рынок", "оптового рынка")):
+        inferred.append({"product_id": "orem", "reason": reason, "configuration": None})
+    if "платформа" in text and any(word in text for word in ("подходит", "поможет", "позволяет", "рекоменд")):
+        inferred.append({"product_id": "askue_cloud", "reason": reason, "configuration": None})
+    if "коммерческих потерь" in text and "подходит" in text and "не подходит" not in text:
+        inferred.append({"product_id": "commercial_losses", "reason": reason, "configuration": None})
+    if "фото" in text and "показан" in text and any(word in text for word in ("можно", "подходит", "позволяет")):
+        inferred.append({"product_id": "meter_photo", "reason": reason, "configuration": None})
+    if any(word in text for word in ("солнечн", "сэс")) and any(word in text for word in ("подходит", "стоимость", "гибрид", "сетевая")):
+        configuration = "hybrid" if "гибрид" in text else "grid"
+        inferred.append({"product_id": "solar", "reason": reason, "configuration": configuration})
+    return inferred
+
+
 def filter_recommendations(items: list, slots: dict) -> tuple[list[dict], list[dict]]:
     valid = []
     dropped = []
@@ -26,6 +45,12 @@ def filter_recommendations(items: list, slots: dict) -> tuple[list[dict], list[d
             dropped.append(item)
             continue
         if product_id == "solar":
+            if configuration not in {"grid", "hybrid"}:
+                context = f"{reason} {slots.get('task') or ''}".lower()
+                if "гибрид" in context:
+                    configuration = "hybrid"
+                elif "сетев" in context:
+                    configuration = "grid"
             if configuration not in {"grid", "hybrid"}:
                 dropped.append(item)
                 continue
