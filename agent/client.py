@@ -27,6 +27,7 @@ class LLMClient:
         return {
             "reply": result["reply"],
             "sources": result["sources"],
+            "recommended": result["recommended"],
             "action": result["action"],
             "session_state": result["state"],
         }

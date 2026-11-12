@@ -9,6 +9,7 @@ from agent.catalog import search_catalog
 from agent.dialogue import RESPONSE_FORMAT, parse_response
 from agent.leads import build_lead, fallback_brief
 from agent.llm import call_llm
+from agent.recommendations import fallback_recommendation_reply, filter_recommendations
 from agent.state import contacts_complete, merge_slots, normalize_state
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,8 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "system.md"
 DIALOGUE_PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / "dialogue.md"
 MAX_HISTORY_MESSAGES = 40
+
+
 def _contacts_request(slots: dict) -> str:
     labels = [
         label for name, label in (("full_name", "ФИО"), ("phone", "телефон"), ("company", "название компании"))
@@ -76,6 +79,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
             "reply": "Напишите, пожалуйста, ваш вопрос.",
             "state": current,
             "sources": [],
+            "recommended": current["recommended"],
             "action": {"type": "clarify", "manager_brief": None},
             "actions": [],
             "done": current["done"],
@@ -85,6 +89,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
             "reply": "Заявка уже передана менеджеру. Для нового обращения начните новый диалог.",
             "state": current,
             "sources": [],
+            "recommended": current["recommended"],
             "action": {"type": "answer", "manager_brief": current["manager_brief"]},
             "actions": [],
             "done": True,
@@ -103,9 +108,16 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
     parsed = parse_response(call_llm(messages, response_format=RESPONSE_FORMAT, temperature=0.2))
 
     slots = merge_slots(current["slots"], parsed["slots"])
+    recommended, dropped = filter_recommendations(parsed["recommended"], slots)
     action_type = parsed["action"]
     reply = parsed["reply"]
     brief = parsed.get("manager_brief") or current["manager_brief"]
+    if dropped:
+        reply = fallback_recommendation_reply(recommended, dropped, slots)
+        brief = fallback_brief(slots)
+        if not recommended and action_type in {"answer", "show_form"}:
+            action_type = "clarify"
+
     if contacts_complete(slots):
         action_type = "handover"
     else:
@@ -131,6 +143,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
     new_state = {
         "history": [*history, {"role": "assistant", "content": reply}],
         "slots": slots,
+        "recommended": recommended,
         "stage": stage,
         "form_shown": form_shown,
         "manager_brief": brief,
@@ -146,6 +159,7 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         "reply": reply,
         "state": new_state,
         "sources": sources,
+        "recommended": recommended,
         "action": {"type": action_type, "manager_brief": brief if form_shown else None},
         "actions": actions,
         "done": done,
