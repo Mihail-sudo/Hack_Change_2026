@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -17,6 +18,11 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["*"]
 
     leads_db_path: Path = Path("backend/data/leads.db")
+
+    session_backend: Literal["redis", "memory"] = "redis"
+    redis_url: str = "redis://localhost:6379/0"
+    redis_key_prefix: str = "chat:session:"
+    session_ttl_seconds: int = 3600
 
     telegram_bot_token: str | None = None
     telegram_chat_id: str | None = None
