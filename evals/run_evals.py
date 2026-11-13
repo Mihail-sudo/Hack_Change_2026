@@ -35,7 +35,7 @@ JUDGE_FORMAT = {
 
 def load_cases(args) -> list[dict]:
     if args.questions:
-        with args.questions.open(encoding="utf-8", newline="") as file:
+        with args.questions.open(encoding="utf-8-sig", newline="") as file:
             return [
                 {"id": row["id"], "question": row["question"], "history": []}
                 for row in csv.DictReader(file)
@@ -46,7 +46,7 @@ def load_cases(args) -> list[dict]:
 def load_reference(path: Path | None) -> dict[str, str]:
     if not path:
         return {}
-    with path.open(encoding="utf-8", newline="") as file:
+    with path.open(encoding="utf-8-sig", newline="") as file:
         return {row["id"]: row["answer"] for row in csv.DictReader(file)}
 
 

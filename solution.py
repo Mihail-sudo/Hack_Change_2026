@@ -22,7 +22,7 @@ logger = logging.getLogger("solution")
 
 def read_questions(data_dir: Path) -> list[dict]:
     path = data_dir / "questions.csv"
-    with path.open(encoding="utf-8", newline="") as file:
+    with path.open(encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file)
         if reader.fieldnames != ["id", "question"]:
             raise ValueError("questions.csv должен содержать ровно колонки id,question")
@@ -124,7 +124,7 @@ def answer_question(row: dict) -> dict:
 
 
 def validate_submission(path: Path, expected_ids: list[str]) -> None:
-    with path.open(encoding="utf-8", newline="") as file:
+    with path.open(encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file)
         if reader.fieldnames != ["id", "answer"]:
             raise ValueError("submission.csv должен содержать ровно колонки id,answer")
@@ -156,6 +156,9 @@ def main() -> int:
     questions = read_questions(data_dir)
     work_dir = prepare_data(data_dir)
     try:
+        from agent import catalog as _catalog
+        from agent import llm as _llm
+
         started = time.monotonic()
         workers = max(1, min(8, int(os.environ.get("MAX_WORKERS", "1"))))
         if workers == 1:
