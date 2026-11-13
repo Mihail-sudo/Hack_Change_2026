@@ -47,18 +47,31 @@ export function createMockChatApi(options: MockChatApiOptions = {}): ChatApi {
   return {
     mode: "mock",
 
-    async createSession(signal?: AbortSignal): Promise<ChatSession> {
+    async createSession(messages: ChatMessage[] = [], signal?: AbortSignal): Promise<ChatSession> {
       await abortAwareDelay(randomDelay(), signal);
       const failure = consumeMockFailure();
       if (failure) throw failure;
+
       const now = new Date().toISOString();
-      const greeting = createGreetingMessage("pending", `greeting-${now}`, now);
-      const session = store.createSession([]);
-      // Привязываем приветствие к реальному id сессии
-      greeting.sessionId = session.id;
-      session.messages = [greeting];
-      const stored = store.appendMessages(session.id, [greeting]);
-      return stored ?? session;
+      let session: ChatSession;
+      if (messages.length > 0) {
+        session = store.createSession([...messages]);
+      } else {
+        // Пустая сессия нового диалога начинается с приветствия ассистента.
+        const created = store.createSession([]);
+        const greeting = createGreetingMessage(
+          created.id,
+          `greeting-${now}-${Math.random().toString(36).slice(2, 8)}`,
+          now
+        );
+        store.appendMessages(created.id, [greeting]);
+        session = store.get(created.id)!;
+      }
+      const lastMessage = session.messages[session.messages.length - 1];
+      return {
+        ...session,
+        updatedAt: lastMessage ? lastMessage.createdAt : now,
+      };
     },
 
     async listSessions(signal?: AbortSignal): Promise<ChatSession[]> {

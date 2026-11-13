@@ -1,6 +1,7 @@
 import { ApiClientError } from "@/shared/api/apiClient";
 import type { ChatApi, SendMessageOptions } from "../types";
 import type { SendMessageResponse } from "@/shared/types/chat";
+
 /**
  * Заготовка live-реализации. Конкретные endpoint'ы НЕ согласованы с backend —
  * здесь намеренно нет URL. При попытке использования выбрасывает понятную ошибку,

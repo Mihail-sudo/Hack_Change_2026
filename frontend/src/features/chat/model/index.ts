@@ -5,6 +5,7 @@ export {
   useEnsureActiveSession,
   useCreateSession,
   useSendMessage,
+  useCloseSession,
 } from "./useChat";
 export { useChatMessaging, type ChatMessaging } from "./useChatMessaging";
 export { useActiveSessionStore, getActiveSessionId } from "./activeSession";

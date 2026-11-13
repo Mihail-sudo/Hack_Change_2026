@@ -17,7 +17,9 @@ export function RecommendationCard({ sources }: RecommendationCardProps) {
             <span className={styles.sourceTitle}>{source.title}</span>
           </div>
           {source.excerpt && <p className={styles.sourceExcerpt}>{source.excerpt}</p>}
-          <span className={styles.sourceMeta}>Стр. {source.page}</span>
+          <span className={styles.sourceMeta}>
+            {source.page !== undefined && `Стр. ${source.page}`}
+          </span>
         </div>
       ))}
     </section>

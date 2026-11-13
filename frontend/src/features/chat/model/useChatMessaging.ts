@@ -10,14 +10,18 @@ export interface ChatMessaging {
   lastFailed: ChatMessage | null;
   /** Быстрые ответы из последнего сообщения ассистента. */
   quickReplies: string[];
+  /** Ошибка загрузки активной сессии истории. */
+  error: Error | null;
   send: (content: string) => void;
   retry: () => void;
+  /** Повторить загрузку истории текущей сессии. */
+  refetchHistory: () => void;
   isMutating: boolean;
 }
 
 /** Фасад над отправкой/повтором для конкретной сессии. */
 export function useChatMessaging(sessionId: string | null): ChatMessaging {
-  const { data: session } = useChatSession(sessionId);
+  const { data: session, error, refetch } = useChatSession(sessionId);
   const sendMessage = useSendMessage();
 
   const messages = session?.messages ?? [];
@@ -45,13 +49,19 @@ export function useChatMessaging(sessionId: string | null): ChatMessaging {
     sendMessage.mutate({ sessionId, content: lastFailed.content });
   }, [sessionId, lastFailed, sendMessage]);
 
+  const refetchHistory = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
   return {
     messages,
     hasPending,
     lastFailed,
     quickReplies,
+    error: error ?? null,
     send,
     retry,
+    refetchHistory,
     isMutating: sendMessage.isPending,
   };
 }

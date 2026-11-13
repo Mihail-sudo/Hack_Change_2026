@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { chatApi } from "@/shared/api";
 import type { ChatMessage, ChatSession } from "@/shared/types/chat";
@@ -69,13 +69,28 @@ export function useCreateSession() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (signal?: AbortSignal) => chatApi.createSession(signal),
+    mutationFn: (initialMessages?: ChatMessage[]) => chatApi.createSession(initialMessages),
     onSuccess: (session) => {
       queryClient.setQueryData(chatKeys.session(session.id), session);
       setActiveSession(session.id);
       void queryClient.invalidateQueries({ queryKey: chatKeys.sessions });
     },
   });
+}
+
+/**
+ * Закрытие активного диалога: контекст сбрасывается (новый диалог при следующем открытии),
+ * но история сессий в хранилище/на сервере не удаляется.
+ */
+export function useCloseSession() {
+  const setActiveSession = useActiveSessionStore((s) => s.setActiveSession);
+  const closeSession = useActiveSessionStore((s) => s.closeSession);
+
+  return useCallback(() => {
+    closeSession();
+    // контекст сброшен — активная сессия больше не отображается
+    setActiveSession(null);
+  }, [closeSession, setActiveSession]);
 }
 
 interface SendContext {

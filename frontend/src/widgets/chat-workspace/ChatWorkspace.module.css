@@ -126,6 +126,16 @@
   background: var(--color-bg-secondary);
 }
 
+.headerAction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.headerAction:disabled:hover {
+  background: transparent;
+  border-color: var(--color-border);
+}
+
 /* Icon-only navigation buttons (history / debug) — hidden on desktop */
 .navButton {
   width: 40px;

@@ -31,9 +31,6 @@ export function ChatPage() {
 
   const activeSessionId = useActiveSessionStore((s) => s.activeSessionId);
   const { data: activeSession } = useChatSession(activeSessionId);
-  const lastAssistantMessage =
-    activeSession?.messages.filter((m) => m.role === "assistant").at(-1) ?? null;
-  const isRequestPending = activeSession?.messages.some((m) => m.status === "pending") ?? false;
 
   const historyRef = useDrawerFocus<HTMLElement>({
     onClose: () => setIsHistoryOpen(false),
@@ -86,8 +83,7 @@ export function ChatPage() {
         <DebugPanel
           onClose={() => setIsDebugOpen(false)}
           sessionId={activeSessionId}
-          lastAssistantMessage={lastAssistantMessage}
-          isRequestPending={isRequestPending}
+          messages={activeSession?.messages ?? []}
         />
       </aside>
     </div>

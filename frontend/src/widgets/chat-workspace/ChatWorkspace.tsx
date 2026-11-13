@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, Menu, Wrench } from "lucide-react";
+import { Plus, Menu, Wrench, Users } from "lucide-react";
 import { chatApi } from "@/shared/api";
 import {
   MessageList,
   MessageComposer,
   QuickReplies,
+  LeadDialog,
   useChatMessaging,
   useEnsureActiveSession,
   useCreateSession,
@@ -18,10 +19,11 @@ interface ChatWorkspaceProps {
 
 export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps) {
   const { sessionId } = useEnsureActiveSession();
-  const { messages, hasPending, quickReplies, send } = useChatMessaging(sessionId);
+  const { messages, hasPending, quickReplies, error, send, refetchHistory } = useChatMessaging(sessionId);
   const createSession = useCreateSession();
   const messagesAreaRef = useRef<HTMLDivElement>(null);
   const [loadError, setLoadError] = useState(false);
+  const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false);
 
   // Автопрокрутка к последнему сообщению; «мгновенно» при prefers-reduced-motion.
   const prefersReducedMotion =
@@ -79,6 +81,15 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
             <Plus size={16} aria-hidden="true" />
             <span>Новый диалог</span>
           </button>
+          <button
+            className={styles.headerAction}
+            onClick={() => setIsLeadDialogOpen(true)}
+            disabled={!sessionId || hasPending}
+            aria-label="Связаться с менеджером"
+          >
+            <Users size={16} aria-hidden="true" />
+            <span>Связаться с менеджером</span>
+          </button>
           {onOpenDebug && (
             <button
               className={styles.navButton}
@@ -95,6 +106,13 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
         {loadError ? (
           <div className={styles.loadStatus} role="alert">
             Не удалось начать новый диалог. Попробуйте ещё раз.
+          </div>
+        ) : error ? (
+          <div className={styles.loadStatus} role="alert">
+            Не удалось загрузить историю диалога.{" "}
+            <button type="button" className={styles.retryBtn} onClick={refetchHistory}>
+              Повторить
+            </button>
           </div>
         ) : sessionId === null ? (
           <div className={styles.loadStatus} role="status">
@@ -121,6 +139,15 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
           информацию проверяйте дополнительно
         </p>
       </div>
+
+      {sessionId && (
+        <LeadDialog
+          isOpen={isLeadDialogOpen}
+          onClose={() => setIsLeadDialogOpen(false)}
+          messages={messages}
+          sessionId={sessionId}
+        />
+      )}
     </div>
   );
 }

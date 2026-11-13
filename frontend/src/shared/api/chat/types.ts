@@ -1,4 +1,4 @@
-import type { ChatSession, SendMessageRequest, SendMessageResponse } from "@/shared/types/chat";
+import type { ChatMessage, ChatSession, SendMessageRequest, SendMessageResponse } from "@/shared/types/chat";
 
 export interface SendMessageOptions extends SendMessageRequest {
   signal?: AbortSignal;
@@ -11,7 +11,7 @@ export interface SendMessageOptions extends SendMessageRequest {
 export interface ChatApi {
   /** "mock" — ответы генерирует локальная заглушка, а не реальный ИИ. */
   readonly mode: "mock" | "live";
-  createSession(signal?: AbortSignal): Promise<ChatSession>;
+  createSession(initialMessages?: ChatMessage[], signal?: AbortSignal): Promise<ChatSession>;
   listSessions(signal?: AbortSignal): Promise<ChatSession[]>;
   getSession(sessionId: string, signal?: AbortSignal): Promise<ChatSession>;
   sendMessage(request: SendMessageOptions): Promise<SendMessageResponse>;
