@@ -26,7 +26,10 @@ def main() -> None:
         build = Path(directory)
         (build / "requirements.txt").write_bytes((ROOT / "requirements.txt").read_bytes())
         (build / "solution.py").write_text(
-            (ROOT / "solution.py").read_text(encoding="utf-8").replace("from agent.", "from "),
+            (ROOT / "solution.py").read_text(encoding="utf-8")
+            .replace("from agent import catalog as _catalog", "import catalog as _catalog")
+            .replace("from agent import llm as _llm", "import llm as _llm")
+            .replace("from agent.", "from "),
             encoding="utf-8",
         )
         for name in AGENT_MODULES:

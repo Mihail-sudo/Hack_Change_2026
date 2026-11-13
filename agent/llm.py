@@ -67,12 +67,12 @@ def _settings() -> tuple[str, str, str]:
     return base_url or BASE_URL, key, model
 
 
-def _post(payload: dict, key: str, base_url: str) -> requests.Response:
+def _post(payload: dict, key: str, base_url: str, endpoint: str = "chat/completions") -> requests.Response:
     for attempt in range(MAX_ATTEMPTS):
         started = time.time()
         try:
             response = requests.post(
-                f"{base_url.rstrip('/')}/chat/completions",
+                f"{base_url.rstrip('/')}/{endpoint}",
                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                 json=payload,
                 timeout=TIMEOUT,
@@ -119,3 +119,25 @@ def call_llm(messages: list[dict], **params) -> str:
     if not content:
         raise LLMError("Модель вернула пустой ответ")
     return content
+
+
+def embed_texts(texts: list[str]) -> list[list[float]]:
+    """Получить embeddings через тот же OpenAI-совместимый прокси."""
+    if not texts:
+        return []
+    base_url, key, _ = _settings()
+    model = _environment("EMB_MODEL") or "BAAI/bge-m3"
+    response = _post(
+        {"model": model, "input": texts},
+        key,
+        base_url,
+        endpoint="embeddings",
+    )
+    try:
+        data = response.json()["data"]
+        embeddings = [item["embedding"] for item in sorted(data, key=lambda item: item["index"])]
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        raise LLMError(f"Неожиданный ответ embeddings: {response.text[:300]}") from exc
+    if len(embeddings) != len(texts):
+        raise LLMError("Количество embeddings не совпадает с числом текстов")
+    return embeddings

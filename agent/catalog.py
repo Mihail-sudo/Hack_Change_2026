@@ -119,44 +119,107 @@ def load_catalog() -> str:
     return "\n\n---\n\n".join(sections)
 
 
+def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
+    frequency = Counter()
+    for chunk in chunks:
+        frequency.update(chunk["terms"].keys())
+    total = len(chunks)
+    scored = []
+    for index, chunk in enumerate(chunks):
+        if chunk["source"] in ALWAYS_INCLUDE:
+            continue
+        score = 0.0
+        for term in query_terms:
+            count = chunk["terms"].get(term, 0)
+            if not count:
+                continue
+            weight = 1 + math.log(total / frequency[term])
+            score += weight * (1 + min(count, 3) * 0.25)
+            if term in chunk["title_terms"]:
+                score += weight * 2
+        if score > 0:
+            scored.append((score, chunk))
+    scored.sort(key=lambda item: item[0], reverse=True)
+    return scored
+
+
+@lru_cache(maxsize=1)
+def _chunk_embeddings() -> tuple[tuple[float, ...], ...]:
+    from agent.llm import embed_texts
+
+    chunks = _chunks()
+    vectors = []
+    for start in range(0, len(chunks), 32):
+        vectors.extend(embed_texts([chunk["text"] for chunk in chunks[start:start + 32]]))
+    return tuple(tuple(vector) for vector in vectors)
+
+
+def _cosine(left: tuple[float, ...], right: tuple[float, ...]) -> float:
+    numerator = sum(a * b for a, b in zip(left, right))
+    left_norm = math.sqrt(sum(value * value for value in left))
+    right_norm = math.sqrt(sum(value * value for value in right))
+    return numerator / (left_norm * right_norm) if left_norm and right_norm else 0.0
+
+
+_SEMANTIC_DISABLED = False
+
+
+def _semantic_ranking(query: str, chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
+    from agent.llm import embed_texts
+
+    global _SEMANTIC_DISABLED
+    if _SEMANTIC_DISABLED:
+        return []
+    try:
+        query_embedding = embed_texts([query])[0]
+        embeddings = _chunk_embeddings()
+    except Exception as exc:
+        _SEMANTIC_DISABLED = True
+        logger.warning("Embeddings недоступны, используется лексический поиск: %s", exc)
+        return []
+    scored = [
+        (_cosine(tuple(query_embedding), embeddings[index]), chunk)
+        for index, chunk in enumerate(chunks)
+        if chunk["source"] not in ALWAYS_INCLUDE
+    ]
+    scored.sort(key=lambda item: item[0], reverse=True)
+    threshold = float(os.environ.get("SEMANTIC_MIN_SCORE", "0.25"))
+    return [item for item in scored if item[0] >= threshold]
+
+
+def _hybrid_ranking(query: str, chunks: tuple[dict, ...]) -> list[dict]:
+    lexical = _lexical_ranking(set(_terms(query)), chunks)
+    if os.environ.get("RETRIEVAL_MODE", "hybrid") == "lexical":
+        return [chunk for _, chunk in lexical]
+    semantic = _semantic_ranking(query, chunks) if lexical or os.environ.get("SEMANTIC_FALLBACK") else []
+    if not semantic:
+        return [chunk for _, chunk in lexical]
+
+    scores = {}
+    combined = {}
+    for ranking in (lexical, semantic):
+        for rank, (_, chunk) in enumerate(ranking, 1):
+            key = id(chunk)
+            scores[key] = scores.get(key, 0.0) + 1 / (60 + rank)
+            combined[key] = chunk
+    ordered = sorted(combined.values(), key=lambda chunk: scores[id(chunk)], reverse=True)
+    return ordered
+
+
 def search_catalog(query: str, limit: int | None = None) -> str:
-    """Найти релевантные разделы и обязательные правила без обращения к LLM."""
+    """Найти релевантные разделы гибридным поиском и обязательные ограничения."""
     limit = int(os.environ.get("TOP_K", MAX_CHUNKS)) if limit is None else limit
     chunks = _chunks()
-    query_terms = set(_terms(query))
     selected = [chunk for chunk in chunks if chunk["source"] in ALWAYS_INCLUDE]
-
-    if query_terms:
-        frequency = Counter()
-        for chunk in chunks:
-            frequency.update(chunk["terms"].keys())
-        total = len(chunks)
-        scored = []
-        for index, chunk in enumerate(chunks):
-            if chunk["source"] in ALWAYS_INCLUDE:
-                continue
-            score = 0.0
-            for term in query_terms:
-                count = chunk["terms"].get(term, 0)
-                if not count:
-                    continue
-                weight = 1 + math.log(total / frequency[term])
-                score += weight * (1 + min(count, 3) * 0.25)
-                if term in chunk["title_terms"]:
-                    score += weight * 2
-            if score > 0:
-                scored.append((score, -index, chunk))
-        scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
-        per_source = Counter()
-        for _, _, chunk in scored:
-            source = chunk["source"]
-            if per_source[source] >= 1:
-                continue
-            selected.append(chunk)
-            per_source[source] += 1
-            if per_source.total() >= limit:
-                break
-
+    per_source = Counter()
+    for chunk in _hybrid_ranking(query, chunks):
+        source = chunk["source"]
+        if per_source[source] >= 1:
+            continue
+        selected.append(chunk)
+        per_source[source] += 1
+        if per_source.total() >= limit:
+            break
     return "\n\n---\n\n".join(
         f"Источник: {chunk['source']}\n\n{chunk['text']}" for chunk in selected
     )
