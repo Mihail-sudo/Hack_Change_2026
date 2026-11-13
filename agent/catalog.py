@@ -1,5 +1,7 @@
 """Официальная база знаний EnergyTool и полнотекстовый поиск по ней."""
 
+import hashlib
+import json
 import logging
 import math
 import os
@@ -12,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(os.environ.get("ENERGYTOOL_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
 KB_DIR = DATA_DIR / "knowledge-base"
+EMBEDDINGS_CACHE = DATA_DIR / "knowledge-base-embeddings.json"
 INVALID_CONTENT_MARKERS = (
     "The URL you requested has been blocked",
     "Web Page Blocked!",
@@ -148,9 +151,29 @@ def _chunk_embeddings() -> tuple[tuple[float, ...], ...]:
     from agent.llm import embed_texts
 
     chunks = _chunks()
+    model = os.environ.get("EMB_MODEL", "BAAI/bge-m3")
+    fingerprint = hashlib.sha256(
+        (model + "\n" + "\n".join(chunk["text"] for chunk in chunks)).encode("utf-8")
+    ).hexdigest()
+    if EMBEDDINGS_CACHE.exists():
+        try:
+            cached = json.loads(EMBEDDINGS_CACHE.read_text(encoding="utf-8"))
+            if cached.get("fingerprint") == fingerprint and len(cached.get("vectors", [])) == len(chunks):
+                return tuple(tuple(vector) for vector in cached["vectors"])
+        except (OSError, ValueError, TypeError) as exc:
+            logger.warning("Кэш embeddings игнорируется: %s", exc)
+
     vectors = []
-    for start in range(0, len(chunks), 32):
-        vectors.extend(embed_texts([chunk["text"] for chunk in chunks[start:start + 32]]))
+    for start in range(0, len(chunks), 16):
+        vectors.extend(embed_texts([chunk["text"] for chunk in chunks[start:start + 16]]))
+    try:
+        temporary = EMBEDDINGS_CACHE.with_suffix(".tmp")
+        temporary.write_text(
+            json.dumps({"fingerprint": fingerprint, "vectors": vectors}), encoding="utf-8"
+        )
+        temporary.replace(EMBEDDINGS_CACHE)
+    except OSError as exc:
+        logger.warning("Не удалось сохранить кэш embeddings: %s", exc)
     return tuple(tuple(vector) for vector in vectors)
 
 

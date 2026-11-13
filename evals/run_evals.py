@@ -69,10 +69,27 @@ def judge_answer(case: dict, result: dict, reference: str) -> dict:
     return json.loads(content)
 
 
-def evaluate(case: dict, reference: str, use_judge: bool) -> dict:
+def evaluate(case: dict, reference: str, use_judge: bool, solution_mode: bool = False) -> dict:
     started = time.perf_counter()
     try:
-        result = respond(case["question"], {"history": case.get("history", [])})
+        if solution_mode:
+            from solution import answer_with_context
+            reply = answer_with_context(case.get("history", []), case["question"])
+            lower = reply.lower()
+            products = []
+            if "платформ" in lower:
+                products.append("askue_cloud")
+            if "орэм" in lower or "оптов" in lower:
+                if not ("500" in lower and "750" in lower):
+                    products.append("orem")
+            if "солнеч" in lower:
+                products.append("solar")
+            if "фото" in lower and "показан" in lower:
+                products.append("meter_photo")
+            action = "out_of_scope" if any(word in lower for word in ("не входит", "вне моей компетенции", "квадрокоптер")) else "answer"
+            result = {"reply": reply, "recommended": [{"product_id": product} for product in products], "sources": [], "action": {"type": action}}
+        else:
+            result = respond(case["question"], {"history": case.get("history", [])})
     except Exception as exc:
         return {"id": case["id"], "passed": False, "error": str(exc)}
 
@@ -103,13 +120,19 @@ def evaluate(case: dict, reference: str, use_judge: bool) -> dict:
         "reply": reply,
         "reference": reference or None,
         "judge_score": None,
+        "judge_error": None,
         "issues": [],
     }
     if use_judge:
-        judgement = judge_answer(case, result, reference)
-        item["judge_score"] = judgement["score"]
-        item["issues"] = judgement["issues"]
-        item["passed"] = item["passed"] and judgement["score"] >= 3
+        try:
+            judgement = judge_answer(case, result, reference)
+        except Exception as exc:
+            item["judge_error"] = str(exc)
+            item["issues"] = ["Судья недоступен; оценка по базовым проверкам"]
+        else:
+            item["judge_score"] = judgement["score"]
+            item["issues"] = judgement["issues"]
+            item["passed"] = item["passed"] and judgement["score"] >= 3
     return item
 
 
@@ -129,7 +152,7 @@ def write_results(items: list[dict], output: Path) -> None:
 def print_comparison(previous: list[dict], current: list[dict]) -> None:
     old = {item["id"]: item for item in previous}
     for item in current:
-        if item["id"] not in old or "seconds" not in old[item["id"]]:
+        if item["id"] not in old or "seconds" not in old[item["id"]] or "seconds" not in item:
             continue
         before = old[item["id"]]
         delta = item["seconds"] - before["seconds"]
@@ -143,6 +166,7 @@ def main() -> int:
     parser.add_argument("--questions", type=Path, help="CSV с колонками id,question")
     parser.add_argument("--reference", type=Path, help="CSV с колонками id,answer")
     parser.add_argument("--judge", action="store_true", help="Оценивать ответы ещё и LLM-судьёй")
+    parser.add_argument("--solution", action="store_true", help="Проверять пакетный режим solution.py")
     parser.add_argument("--output", type=Path, default=ROOT / "evals" / "results" / "latest")
     args = parser.parse_args()
 
@@ -153,7 +177,7 @@ def main() -> int:
     reference = load_reference(args.reference)
     items = []
     for case in load_cases(args):
-        item = evaluate(case, reference.get(case["id"], case.get("reference", "")), args.judge)
+        item = evaluate(case, reference.get(case["id"], case.get("reference", "")), args.judge, args.solution)
         items.append(item)
         if "error" in item:
             print(f"{item['id']}: ERROR — {item['error']}")

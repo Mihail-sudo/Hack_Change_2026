@@ -222,3 +222,4 @@ __marimo__/
 # Наше
 leads/
 evals/results/
+data/knowledge-base-embeddings.json

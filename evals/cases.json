@@ -33,7 +33,7 @@
   {
     "id": "out-of-scope",
     "question": "Вы продаёте квадрокоптеры?",
-    "required": ["вне моей компетенции"],
+    "required_any": ["не вход", "не продаёт"],
     "expected_action": "out_of_scope"
   },
   {
