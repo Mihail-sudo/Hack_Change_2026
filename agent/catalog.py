@@ -92,18 +92,25 @@ def _chunks() -> tuple[dict, ...]:
             continue
         source = path.relative_to(KB_DIR).as_posix()
         document_title = text.splitlines()[0].removeprefix("# ").strip()
-        for section in re.split(r"(?m)(?=^#{1,2} )", text):
+        parent_title = ""
+        for section in re.split(r"(?m)(?=^#{1,3} )", text):
             section = section.strip()
             if not section:
                 continue
             section_title = section.splitlines()[0].lstrip("# ").strip()
+            if section.startswith("### "):
+                title = f"{document_title} / {parent_title} / {section_title}" if parent_title else f"{document_title} / {section_title}"
+            else:
+                if section.startswith("## "):
+                    parent_title = section_title
+                title = f"{document_title} / {section_title}"
             for part in _split_long(section):
                 chunks.append({
                     "source": source,
-                    "title": f"{document_title} / {section_title}",
+                    "title": title,
                     "text": part,
                     "terms": Counter(_terms(part)),
-                    "title_terms": set(_terms(f"{document_title} {section_title}")),
+                    "title_terms": set(_terms(title)),
                 })
     if not chunks:
         raise RuntimeError(f"Нет валидных данных официальной базы в {KB_DIR}")
