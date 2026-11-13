@@ -41,7 +41,7 @@ def _environment(*names: str) -> str:
 
 @lru_cache(maxsize=1)
 def _settings() -> tuple[str, str, str]:
-    base_url = _environment("LLM_BASE_URL", "OPENAI_BASE_URL")
+    base_url = _environment("LLM_BASE_URL", "BASE_URL", "OPENAI_BASE_URL")
     key = _environment("LLM_API_KEY", "OPENAI_API_KEY", "POLZA_AI_API_KEY")
     model = _environment("LLM_MODEL", "OPENAI_MODEL", "GEN_MODEL")
 
@@ -53,7 +53,7 @@ def _settings() -> tuple[str, str, str]:
             name, value = line.split("=", 1)
             name = name.strip()
             value = value.strip().strip('"').strip("'")
-            if name in {"LLM_BASE_URL", "OPENAI_BASE_URL"} and not base_url:
+            if name in {"LLM_BASE_URL", "BASE_URL", "OPENAI_BASE_URL"} and not base_url:
                 base_url = value
             elif name in {"LLM_API_KEY", "OPENAI_API_KEY", "POLZA_AI_API_KEY"} and not key:
                 key = value
@@ -101,7 +101,7 @@ def call_llm(messages: list[dict], **params) -> str:
     """Отправить сообщения модели и вернуть текст ответа."""
     base_url, key, model = _settings()
     payload = {"model": model, "messages": messages}
-    if not _environment("LLM_BASE_URL", "OPENAI_BASE_URL"):
+    if not _environment("LLM_BASE_URL", "BASE_URL", "OPENAI_BASE_URL"):
         payload["reasoning"] = {"enabled": False}
     if _environment("TEMPERATURE") and "temperature" not in params:
         payload["temperature"] = float(_environment("TEMPERATURE"))
@@ -126,7 +126,8 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     if not texts:
         return []
     base_url, key, _ = _settings()
-    model = _environment("EMB_MODEL") or "BAAI/bge-m3"
+    key = _environment("EMBEDDER_API_KEY") or key
+    model = _environment("EMB_MODEL") or "baai/bge-m3"
     response = _post(
         {"model": model, "input": texts},
         key,

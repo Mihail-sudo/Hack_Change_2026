@@ -13,23 +13,26 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from pathlib import Path
 
-FALLBACK_ANSWER = "Извините, сейчас не получается ответить. Оставьте, пожалуйста, телефон, и менеджер свяжется с вами."
+FALLBACK_ANSWER = "Не могу ответить по доступным фрагментам базы знаний."
 MAX_ANSWER_CHARS = 10_000
 TOTAL_TIMEOUT_SECONDS = 20 * 60
 SOLUTION_PROMPT_FILE = Path(__file__).resolve().parent / "prompts" / "solution.md"
 logger = logging.getLogger("solution")
 
 
+def _find_input_file(data_dir: Path, names: tuple[str, ...]) -> Path:
+    script_dir = Path(__file__).resolve().parent
+    roots = (data_dir, Path.cwd(), script_dir, script_dir / data_dir)
+    for root in roots:
+        for name in names:
+            path = root / name
+            if path.is_file():
+                return path
+    raise FileNotFoundError(f"Не найдены входные файлы: {names}")
+
+
 def _questions_path(data_dir: Path) -> Path:
-    candidates = [
-        data_dir / "questions.csv",
-        Path.cwd() / "questions.csv",
-        Path(__file__).resolve().parent / "questions.csv",
-    ]
-    for path in candidates:
-        if path.is_file():
-            return path
-    raise FileNotFoundError("Не найден questions.csv в DATA_DIR, рабочем каталоге или рядом с solution.py")
+    return _find_input_file(data_dir, ("questions.csv", "train.csv"))
 
 
 def read_questions(data_dir: Path) -> list[dict]:
@@ -65,8 +68,9 @@ def parse_question(text: str) -> tuple[list[dict], str]:
 
 
 def prepare_data(data_dir: Path) -> Path | None:
-    archive = data_dir / "knowledge-base.zip"
-    if not archive.exists():
+    try:
+        archive = _find_input_file(data_dir, ("knowledge-base.zip", "knowledge_base.zip", "kb.zip"))
+    except FileNotFoundError:
         os.environ["ENERGYTOOL_DATA_DIR"] = str(data_dir)
         return None
     work_dir = Path(tempfile.mkdtemp(prefix="energytool-kb-"))
@@ -120,7 +124,7 @@ def answer_with_context(history: list[dict], message: str) -> str:
         *visible,
         {"role": "user", "content": message},
     ]
-    return call_llm(messages, temperature=float(os.environ.get("TEMPERATURE", "0.2"))).strip()
+    return call_llm(messages, temperature=float(os.environ.get("TEMPERATURE", "0.0"))).strip()
 
 
 def answer_question(row: dict) -> dict:
@@ -172,7 +176,7 @@ def main() -> int:
         from agent import llm as _llm
 
         started = time.monotonic()
-        workers = max(1, min(8, int(os.environ.get("MAX_WORKERS", "1"))))
+        workers = max(1, min(8, int(os.environ.get("MAX_WORKERS", "3"))))
         if workers == 1:
             answers = [answer_question(row) for row in questions]
         else:
