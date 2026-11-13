@@ -20,8 +20,20 @@ SOLUTION_PROMPT_FILE = Path(__file__).resolve().parent / "prompts" / "solution.m
 logger = logging.getLogger("solution")
 
 
+def _questions_path(data_dir: Path) -> Path:
+    candidates = [
+        data_dir / "questions.csv",
+        Path.cwd() / "questions.csv",
+        Path(__file__).resolve().parent / "questions.csv",
+    ]
+    for path in candidates:
+        if path.is_file():
+            return path
+    raise FileNotFoundError("Не найден questions.csv в DATA_DIR, рабочем каталоге или рядом с solution.py")
+
+
 def read_questions(data_dir: Path) -> list[dict]:
-    path = data_dir / "questions.csv"
+    path = _questions_path(data_dir)
     with path.open(encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file)
         if reader.fieldnames != ["id", "question"]:
