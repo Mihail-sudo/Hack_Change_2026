@@ -48,12 +48,14 @@ def _read_valid(path: Path) -> str | None:
 
 def _terms(text: str) -> list[str]:
     terms = []
+    synonyms = {"фасад": ("вертик",)}
     for token in TOKEN_RE.findall(text.lower().replace("ё", "е")):
         if token in STOP_WORDS or len(token) < 3:
             continue
         term = token if len(token) <= 5 else token[:6]
         if term not in STOP_WORDS:
             terms.append(term)
+            terms.extend(synonyms.get(term, ()))
     return terms
 
 
@@ -225,6 +227,11 @@ def _hybrid_ranking(query: str, chunks: tuple[dict, ...]) -> list[dict]:
             key = id(chunk)
             scores[key] = scores.get(key, 0.0) + 1 / (60 + rank)
             combined[key] = chunk
+    query_terms = set(_terms(query))
+    for chunk in combined.values():
+        text = chunk["text"].lower()
+        exact_matches = sum(term in text for term in query_terms)
+        scores[id(chunk)] += exact_matches * 0.2
     ordered = sorted(combined.values(), key=lambda chunk: scores[id(chunk)], reverse=True)
     return ordered
 
@@ -237,7 +244,7 @@ def search_catalog(query: str, limit: int | None = None) -> str:
     per_source = Counter()
     for chunk in _hybrid_ranking(query, chunks):
         source = chunk["source"]
-        if per_source[source] >= 1:
+        if per_source[source] >= 2:
             continue
         selected.append(chunk)
         per_source[source] += 1
