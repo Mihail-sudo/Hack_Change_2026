@@ -29,7 +29,7 @@ PRODUCT_SCOPE_SECTIONS = {
     "20-products/24-losses.md": "Поиск коммерческих потерь",
     "20-products/25-meter-reading.md": "Распознавание показаний по фотографии",
 }
-MAX_CHUNKS = 6
+MAX_CHUNKS = 8
 MAX_CHUNK_CHARS = 5500
 TOKEN_RE = re.compile(r"[a-zа-я0-9]+", re.IGNORECASE)
 STOP_WORDS = {
@@ -180,7 +180,10 @@ def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tu
         return _legacy_lexical_ranking(query_terms, chunks)
     scores = index.get_scores(list(query_terms))
     ranked = [
-        (float(scores[index]), chunk)
+        (
+            float(scores[index]) * (1 + 0.5 * len(query_terms.intersection(chunk["title_terms"]))),
+            chunk,
+        )
         for index, chunk in enumerate(chunks)
         if not _is_always_included(chunk) and scores[index] > 0
     ]
@@ -277,12 +280,16 @@ def search_catalog(query: str, limit: int | None = None) -> str:
     chunks = _chunks()
     selected = [chunk for chunk in chunks if _is_always_included(chunk)]
     per_source = Counter()
-    for chunk in _hybrid_ranking(query, chunks):
-        source = chunk["source"]
-        if per_source[source] >= 2:
-            continue
-        selected.append(chunk)
-        per_source[source] += 1
+    ranked = _hybrid_ranking(query, chunks)
+    for max_per_source in (1, 2):
+        for chunk in ranked:
+            source = chunk["source"]
+            if per_source[source] >= max_per_source:
+                continue
+            selected.append(chunk)
+            per_source[source] += 1
+            if per_source.total() >= limit:
+                break
         if per_source.total() >= limit:
             break
     selected_sources = {chunk["source"] for chunk in selected}
