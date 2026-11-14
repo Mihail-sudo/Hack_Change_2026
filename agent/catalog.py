@@ -20,8 +20,14 @@ INVALID_CONTENT_MARKERS = (
     "Web Page Blocked!",
     "You need to enable JavaScript to run this app",
 )
-ALWAYS_INCLUDE = {
-    "00-reference/02-product-scope-and-limits.md",
+SCOPE_FILE = "00-reference/02-product-scope-and-limits.md"
+ALWAYS_INCLUDE_SECTIONS = {"Общие границы", "Когда требуется специалист"}
+PRODUCT_SCOPE_SECTIONS = {
+    "20-products/21-orem.md": "Выход на оптовый рынок",
+    "20-products/22-askue.md": "Облачная платформа учёта",
+    "20-products/23-solar.md": "Солнечные электростанции",
+    "20-products/24-losses.md": "Поиск коммерческих потерь",
+    "20-products/25-meter-reading.md": "Распознавание показаний по фотографии",
 }
 MAX_CHUNKS = 6
 MAX_CHUNK_CHARS = 5500
@@ -33,6 +39,10 @@ STOP_WORDS = {
     "от", "по", "под", "пока", "после", "при", "продае", "продукт", "работает", "решение",
     "сам", "свой", "система", "сколько", "с", "такой", "только", "у", "что", "это",
 }
+
+
+def _is_always_included(chunk: dict) -> bool:
+    return chunk["source"] == SCOPE_FILE and chunk["title"].split(" / ")[-1] in ALWAYS_INCLUDE_SECTIONS
 
 
 def _read_valid(path: Path) -> str | None:
@@ -48,7 +58,7 @@ def _read_valid(path: Path) -> str | None:
 
 def _terms(text: str) -> list[str]:
     terms = []
-    synonyms = {"фасад": ("вертик",)}
+    synonyms = {"фасад": ("вертик",), "снт": ("товариществ", "садоводств")}
     for token in TOKEN_RE.findall(text.lower().replace("ё", "е")):
         if token in STOP_WORDS or len(token) < 3:
             continue
@@ -131,14 +141,22 @@ def load_catalog() -> str:
     return "\n\n---\n\n".join(sections)
 
 
-def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
+@lru_cache(maxsize=1)
+def _bm25_index(texts: tuple[str, ...]):
+    from rank_bm25 import BM25Okapi
+
+    corpus = [_terms(text) for text in texts]
+    return BM25Okapi(corpus)
+
+
+def _legacy_lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
     frequency = Counter()
     for chunk in chunks:
         frequency.update(chunk["terms"].keys())
     total = len(chunks)
     scored = []
     for index, chunk in enumerate(chunks):
-        if chunk["source"] in ALWAYS_INCLUDE:
+        if _is_always_included(chunk):
             continue
         score = 0.0
         for term in query_terms:
@@ -153,6 +171,21 @@ def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tu
             scored.append((score, chunk))
     scored.sort(key=lambda item: item[0], reverse=True)
     return scored
+
+
+def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
+    try:
+        index = _bm25_index(tuple(chunk["text"] for chunk in chunks))
+    except ImportError:
+        return _legacy_lexical_ranking(query_terms, chunks)
+    scores = index.get_scores(list(query_terms))
+    ranked = [
+        (float(scores[index]), chunk)
+        for index, chunk in enumerate(chunks)
+        if not _is_always_included(chunk) and scores[index] > 0
+    ]
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return ranked
 
 
 @lru_cache(maxsize=1)
@@ -212,7 +245,7 @@ def _semantic_ranking(query: str, chunks: tuple[dict, ...]) -> list[tuple[float,
     scored = [
         (_cosine(tuple(query_embedding), embeddings[index]), chunk)
         for index, chunk in enumerate(chunks)
-        if chunk["source"] not in ALWAYS_INCLUDE
+        if not _is_always_included(chunk)
     ]
     scored.sort(key=lambda item: item[0], reverse=True)
     threshold = float(os.environ.get("SEMANTIC_MIN_SCORE", "0.25"))
@@ -234,11 +267,6 @@ def _hybrid_ranking(query: str, chunks: tuple[dict, ...]) -> list[dict]:
             key = id(chunk)
             scores[key] = scores.get(key, 0.0) + 1 / (60 + rank)
             combined[key] = chunk
-    query_terms = set(_terms(query))
-    for chunk in combined.values():
-        text = chunk["text"].lower()
-        exact_matches = sum(term in text for term in query_terms)
-        scores[id(chunk)] += exact_matches * 0.2
     ordered = sorted(combined.values(), key=lambda chunk: scores[id(chunk)], reverse=True)
     return ordered
 
@@ -247,7 +275,7 @@ def search_catalog(query: str, limit: int | None = None) -> str:
     """Найти релевантные разделы гибридным поиском и обязательные ограничения."""
     limit = int(os.environ.get("TOP_K", MAX_CHUNKS)) if limit is None else limit
     chunks = _chunks()
-    selected = [chunk for chunk in chunks if chunk["source"] in ALWAYS_INCLUDE]
+    selected = [chunk for chunk in chunks if _is_always_included(chunk)]
     per_source = Counter()
     for chunk in _hybrid_ranking(query, chunks):
         source = chunk["source"]
@@ -257,6 +285,15 @@ def search_catalog(query: str, limit: int | None = None) -> str:
         per_source[source] += 1
         if per_source.total() >= limit:
             break
+    selected_sources = {chunk["source"] for chunk in selected}
+    for source in selected_sources:
+        section = PRODUCT_SCOPE_SECTIONS.get(source)
+        if not section:
+            continue
+        for chunk in chunks:
+            if chunk["source"] == SCOPE_FILE and chunk["title"].split(" / ")[-1] == section and chunk not in selected:
+                selected.append(chunk)
+                break
     return "\n\n---\n\n".join(
         f"Источник: {chunk['source']}\n\n{chunk['text']}" for chunk in selected
     )

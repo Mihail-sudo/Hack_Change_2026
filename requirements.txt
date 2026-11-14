@@ -1,1 +1,2 @@
 requests==2.34.2
+rank-bm25==0.2.2
