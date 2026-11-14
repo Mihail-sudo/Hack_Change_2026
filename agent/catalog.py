@@ -29,7 +29,7 @@ PRODUCT_SCOPE_SECTIONS = {
     "20-products/24-losses.md": "Поиск коммерческих потерь",
     "20-products/25-meter-reading.md": "Распознавание показаний по фотографии",
 }
-MAX_CHUNKS = 8
+MAX_CHUNKS = 6
 MAX_CHUNK_CHARS = 5500
 TOKEN_RE = re.compile(r"[a-zа-я0-9]+", re.IGNORECASE)
 STOP_WORDS = {
@@ -244,6 +244,11 @@ def _hybrid_ranking(query: str, chunks: tuple[dict, ...]) -> list[dict]:
             key = id(chunk)
             scores[key] = scores.get(key, 0.0) + 1 / (60 + rank)
             combined[key] = chunk
+    query_terms = set(_terms(query))
+    for chunk in combined.values():
+        text = chunk["text"].lower()
+        exact_matches = sum(term in text for term in query_terms)
+        scores[id(chunk)] += exact_matches * 0.2
     ordered = sorted(combined.values(), key=lambda chunk: scores[id(chunk)], reverse=True)
     return ordered
 
