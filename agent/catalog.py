@@ -141,15 +141,7 @@ def load_catalog() -> str:
     return "\n\n---\n\n".join(sections)
 
 
-@lru_cache(maxsize=1)
-def _bm25_index(texts: tuple[str, ...]):
-    from rank_bm25 import BM25Okapi
-
-    corpus = [_terms(text) for text in texts]
-    return BM25Okapi(corpus)
-
-
-def _legacy_lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
+def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
     frequency = Counter()
     for chunk in chunks:
         frequency.update(chunk["terms"].keys())
@@ -171,24 +163,6 @@ def _legacy_lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> 
             scored.append((score, chunk))
     scored.sort(key=lambda item: item[0], reverse=True)
     return scored
-
-
-def _lexical_ranking(query_terms: set[str], chunks: tuple[dict, ...]) -> list[tuple[float, dict]]:
-    try:
-        index = _bm25_index(tuple(chunk["text"] for chunk in chunks))
-    except ImportError:
-        return _legacy_lexical_ranking(query_terms, chunks)
-    scores = index.get_scores(list(query_terms))
-    ranked = [
-        (
-            float(scores[index]) * (1 + 0.5 * len(query_terms.intersection(chunk["title_terms"]))),
-            chunk,
-        )
-        for index, chunk in enumerate(chunks)
-        if not _is_always_included(chunk) and scores[index] > 0
-    ]
-    ranked.sort(key=lambda item: item[0], reverse=True)
-    return ranked
 
 
 @lru_cache(maxsize=1)
@@ -280,16 +254,12 @@ def search_catalog(query: str, limit: int | None = None) -> str:
     chunks = _chunks()
     selected = [chunk for chunk in chunks if _is_always_included(chunk)]
     per_source = Counter()
-    ranked = _hybrid_ranking(query, chunks)
-    for max_per_source in (1, 2):
-        for chunk in ranked:
-            source = chunk["source"]
-            if per_source[source] >= max_per_source:
-                continue
-            selected.append(chunk)
-            per_source[source] += 1
-            if per_source.total() >= limit:
-                break
+    for chunk in _hybrid_ranking(query, chunks):
+        source = chunk["source"]
+        if per_source[source] >= 2:
+            continue
+        selected.append(chunk)
+        per_source[source] += 1
         if per_source.total() >= limit:
             break
     selected_sources = {chunk["source"] for chunk in selected}
