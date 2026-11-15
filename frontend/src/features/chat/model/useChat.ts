@@ -166,11 +166,16 @@ export function useSendMessage() {
         ...current,
         // pending заменяется ответом; прежняя копия неудачного сообщения удаляется,
         // чтобы после успешного retry не было дубликата.
+        // Пустой ответ (backend, mode="admin") означает: сообщение доставлено
+        // оператору, реплика придёт через поллинг — pending просто убираем.
         messages: current.messages
           .filter(
             (m) => !(m.role === "user" && m.status === "error" && m.content === content.trim())
           )
-          .map((m) => (m.id === context.pendingId ? response.message : m)),
+          .flatMap((m) => {
+            if (m.id !== context.pendingId) return [m];
+            return response.message.content ? [response.message] : [];
+          }),
         updatedAt: response.message.createdAt,
       });
     },

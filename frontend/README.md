@@ -1,4 +1,29 @@
-# React + TypeScript + Vite
+# Energytool AI-консультант (frontend)
+
+React + TypeScript + Vite чат-виджет ИИ-консультанта МТС Energytool.
+
+## Запуск
+
+```bash
+npm install
+npm run dev        # http://127.0.0.1:5173
+```
+
+Backend поднимается из корня репозитория: `docker compose up --build`
+(API — http://localhost:8000, Swagger — http://localhost:8000/docs).
+
+## Конфигурация
+
+Скопируйте `.env.example` в `.env` и при необходимости поправьте значения:
+
+| Переменная | По умолчанию | Описание |
+|---|---|---|
+| `VITE_API_BASE_URL` | `http://localhost:8000` | Адрес backend API (публичная переменная, без секретов) |
+| `VITE_CHAT_API` | `mock` | `mock` — локальная заглушка, `live` — реальный backend |
+
+Файл `.env` не коммитится (см. `.gitignore`).
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

@@ -1,0 +1,251 @@
+/**
+ * Тесты live-реализации ChatApi (реальные DTO backend'а из openapi.json).
+ * fetch подменяется vi.fn() — тот же подход, что в apiClient.test.ts.
+ * Проверяются: корректность DTO-маппинга, ошибки, сеть, таймаут/отмена.
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { ApiClientError } from "@/shared/api/apiClient";
+import { API_BASE_URL } from "@/shared/api/config";
+import { createLiveChatApi } from "./liveChatApi";
+import type { ChatResponseDto, DialogListResponseDto, MessagesReadDto } from "./dto";
+
+const SESSION_ID = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d";
+
+function jsonResponse(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+const chatResponse: ChatResponseDto = {
+  reply: "Для учета по абонентам подходит облачная платформа АСКУЭ.",
+  done: false,
+  fallback: false,
+  mode: "bot",
+};
+
+beforeEach(() => {
+  vi.stubGlobal("fetch", vi.fn());
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe("liveChatApi.createSession", () => {
+  it("не делает HTTP-запросов и генерирует локальный UUID (backend создаёт диалог при первом POST /chat)", async () => {
+    const api = createLiveChatApi();
+    const session = await api.createSession();
+
+    expect(vi.mocked(globalThis.fetch)).not.toHaveBeenCalled();
+    expect(session.id).toMatch(/^[A-Za-z0-9_-]{8,128}$/);
+    expect(session.status).toBe("active");
+    expect(session.messages).toEqual([]);
+  });
+});
+
+describe("liveChatApi.sendMessage", () => {
+  it("отправляет snake_case ChatRequestDto и маппит ChatResponseDto в доменное сообщение", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, chatResponse));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const api = createLiveChatApi();
+    const result = await api.sendMessage({ sessionId: SESSION_ID, content: "Как снизить счета?" });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${API_BASE_URL}/chat`,
+      expect.objectContaining({ method: "POST" })
+    );
+    const init = fetchMock.mock.calls[0]![1] as RequestInit;
+    expect(JSON.parse(String(init.body))).toEqual({
+      session_id: SESSION_ID,
+      message: "Как снизить счета?",
+    });
+
+    expect(result.sessionId).toBe(SESSION_ID);
+    expect(result.message.role).toBe("assistant");
+    expect(result.message.content).toBe(chatResponse.reply);
+    expect(result.message.status).toBe("complete");
+    expect(typeof result.message.responseTimeMs).toBe("number");
+    expect(result.message.responseTimeMs!).toBeGreaterThanOrEqual(0);
+    // Backend не возвращает sources/quickReplies — они не выдумываются
+    expect(result.message.sources).toBeUndefined();
+    expect(result.message.quickReplies).toBeUndefined();
+  });
+
+  it("пустой ответ в режиме admin (reply='') возвращается как есть — useChat убирает pending", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse(200, { reply: "", done: false, fallback: false, mode: "admin" })
+      )
+    );
+
+    const api = createLiveChatApi();
+    const result = await api.sendMessage({ sessionId: SESSION_ID, content: "Позовите оператора" });
+
+    expect(result.message.content).toBe("");
+  });
+
+  it("ошибка валидации 422 → VALIDATION_ERROR с деталями полей", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse(422, {
+          detail: [{ loc: ["body", "session_id"], msg: "String should match pattern" }],
+        })
+      )
+    );
+
+    const api = createLiveChatApi();
+    await expect(
+      api.sendMessage({ sessionId: "bad id!", content: "текст" })
+    ).rejects.toMatchObject({
+      code: "VALIDATION_ERROR",
+      statusCode: 422,
+      details: { "session_id": ["String should match pattern"] },
+    });
+  });
+
+  it("ошибка сервера 500 c detail → SERVER_ERROR с текстом backend", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse(500, { detail: "Internal server error" }))
+    );
+
+    const api = createLiveChatApi();
+    await expect(
+      api.sendMessage({ sessionId: SESSION_ID, content: "текст" })
+    ).rejects.toMatchObject({ code: "SERVER_ERROR", message: "Internal server error" });
+  });
+
+  it("недоступный backend (fetch reject) → NETWORK_ERROR", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+
+    const api = createLiveChatApi();
+    await expect(
+      api.sendMessage({ sessionId: SESSION_ID, content: "текст" })
+    ).rejects.toBeInstanceOf(ApiClientError);
+    await expect(
+      api.sendMessage({ sessionId: SESSION_ID, content: "текст" })
+    ).rejects.toMatchObject({ code: "NETWORK_ERROR" });
+  });
+
+  it("отмена запроса (AbortSignal) → TIMEOUT", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        (_url: string, init: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            init.signal?.addEventListener("abort", () =>
+              reject(new DOMException("aborted", "AbortError"))
+            );
+          })
+      )
+    );
+
+    const api = createLiveChatApi();
+    const controller = new AbortController();
+    const promise = api.sendMessage({
+      sessionId: SESSION_ID,
+      content: "текст",
+      signal: controller.signal,
+    });
+    controller.abort();
+
+    await expect(promise).rejects.toMatchObject({ code: "TIMEOUT" });
+  });
+});
+
+describe("liveChatApi.getSession", () => {
+  it("маппит MessagesReadDto в ChatSession с серверными id сообщений", async () => {
+    const dto: MessagesReadDto = {
+      session_id: SESSION_ID,
+      mode: "bot",
+      messages: [
+        {
+          id: 7,
+          role: "user",
+          author: "client",
+          content: "Счета выросли",
+          created_at: "2026-11-15T10:00:00+00:00",
+        },
+        {
+          id: 8,
+          role: "assistant",
+          author: "bot",
+          content: "Разберёмся",
+          created_at: "2026-11-15T10:00:05+00:00",
+        },
+      ],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(200, dto)));
+
+    const api = createLiveChatApi();
+    const session = await api.getSession(SESSION_ID);
+
+    expect(session.id).toBe(SESSION_ID);
+    expect(session.messages).toHaveLength(2);
+    expect(session.messages[0]).toMatchObject({
+      id: "srv-7",
+      sessionId: SESSION_ID,
+      role: "user",
+      content: "Счета выросли",
+      createdAt: "2026-11-15T10:00:00+00:00",
+    });
+    expect(session.updatedAt).toBe("2026-11-15T10:00:05+00:00");
+  });
+
+  it("диалог без сообщений (backend отдаёт пустой список) → сессия без сообщений", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse(200, { session_id: SESSION_ID, mode: "bot", messages: [] })
+      )
+    );
+
+    const api = createLiveChatApi();
+    const session = await api.getSession(SESSION_ID);
+
+    expect(session.messages).toEqual([]);
+  });
+});
+
+describe("liveChatApi.listSessions", () => {
+  it("маппит DialogListResponseDto в список сессий (сообщения подгружаются отдельно)", async () => {
+    const dto: DialogListResponseDto = {
+      dialogs: [
+        {
+          session_id: SESSION_ID,
+          mode: "bot",
+          handoff_requested_at: null,
+          created_at: "2026-11-15T10:00:00+00:00",
+          updated_at: "2026-11-15T10:05:00+00:00",
+          messages_count: 12,
+          last_message: "Хорошо, передаю заявку",
+        },
+      ],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(200, dto)));
+
+    const api = createLiveChatApi();
+    const sessions = await api.listSessions();
+
+    expect(sessions).toHaveLength(1);
+    expect(sessions[0]).toMatchObject({
+      id: SESSION_ID,
+      createdAt: "2026-11-15T10:00:00+00:00",
+      updatedAt: "2026-11-15T10:05:00+00:00",
+    });
+    expect(sessions[0]!.messages).toEqual([]);
+  });
+
+  it("ошибка сети при загрузке истории → NETWORK_ERROR (без тихого fallback на mock)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+
+    const api = createLiveChatApi();
+    await expect(api.listSessions()).rejects.toMatchObject({ code: "NETWORK_ERROR" });
+  });
+});
