@@ -250,14 +250,6 @@ def _hybrid_ranking(query: str, chunks: tuple[dict, ...]) -> list[dict]:
         exact_matches = sum(term in text for term in query_terms)
         scores[id(chunk)] += exact_matches * 0.2
     ordered = sorted(combined.values(), key=lambda chunk: scores[id(chunk)], reverse=True)
-    if os.environ.get("RERANKER_MODEL"):
-        try:
-            from agent.llm import rerank_documents
-            selected = rerank_documents(query, ordered[:12])
-            if selected:
-                return selected + [chunk for chunk in ordered if chunk not in selected]
-        except Exception as exc:
-            logger.warning("Reranker недоступен, используется гибридный порядок: %s", exc)
     return ordered
 
 

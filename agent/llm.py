@@ -142,30 +142,3 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     if len(embeddings) != len(texts):
         raise LLMError("Количество embeddings не совпадает с числом текстов")
     return embeddings
-
-
-def rerank_documents(query: str, chunks: list[dict]) -> list[dict]:
-    """Переупорядочить фрагменты через необязательный reranker платформы."""
-    base_url, key, _ = _settings()
-    key = _environment("RERANKER_API_KEY") or key
-    model = _environment("RERANKER_MODEL")
-    if not model:
-        raise LLMError("Не задан RERANKER_MODEL")
-    response = _post(
-        {
-            "model": model,
-            "query": query,
-            "documents": [chunk["text"] for chunk in chunks],
-            "top_n": int(_environment("RERANKER_TOP_N") or 4),
-        },
-        key,
-        base_url,
-        endpoint="rerank",
-    )
-    try:
-        data = response.json()
-        entries = data.get("results", data.get("data", []))
-        selected = [chunks[int(item["index"])] for item in entries]
-    except (ValueError, KeyError, IndexError, TypeError) as exc:
-        raise LLMError("Неожиданный ответ reranker") from exc
-    return selected
