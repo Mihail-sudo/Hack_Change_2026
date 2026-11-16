@@ -54,7 +54,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  const timeoutId = setTimeout(() => controller.abort(), 90000);
 
   const defaultHeaders: HeadersInit = {
     "Content-Type": "application/json",

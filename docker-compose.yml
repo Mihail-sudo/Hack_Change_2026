@@ -10,6 +10,8 @@ services:
         required: false
     environment:
       REDIS_URL: redis://redis:6379/0
+      LLM_TIMEOUT_SECONDS: 8
+      LLM_MAX_ATTEMPTS: 2
     depends_on:
       redis:
         condition: service_healthy

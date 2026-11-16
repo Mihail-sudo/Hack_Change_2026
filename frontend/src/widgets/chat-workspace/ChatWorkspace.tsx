@@ -135,8 +135,9 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
         )}
         <MessageComposer disabled={hasPending} onSend={send} />
         <p className={styles.composerHint}>
-          Демонстрационный прототип: ответы генерирует заглушка, а не реальный ИИ. Важную
-          информацию проверяйте дополнительно
+          {isDemo
+            ? "Демонстрационный прототип: ответы генерирует заглушка, а не реальный ИИ. Важную информацию проверяйте дополнительно"
+            : "Ответы формирует ИИ на основе базы знаний Energytool. Важную информацию проверяйте дополнительно"}
         </p>
       </div>
 
