@@ -34,6 +34,9 @@ function MessageDebugView({
   isMock: boolean;
 }) {
   const sources = message.sources ?? [];
+  // Секция статуса показывается, только если backend прислал хотя бы одно поле:
+  // для mock-сообщений (без author/fallback) показывать «нет данных» дважды избыточно.
+  const hasStatusMeta = message.author !== undefined || message.fallback !== undefined;
 
   return (
     <div className={styles.messageDebug}>
@@ -50,6 +53,30 @@ function MessageDebugView({
           <FileText size={11} aria-hidden="true" />
           демо-данные
         </span>
+      )}
+
+      {/* Технический статус ответа (реальные поля backend ChatResponse) */}
+      {hasStatusMeta && (
+        <div className={styles.statusSection}>
+          <div className={styles.metricRow}>
+            <span className={styles.metricLabel}>Автор ответа</span>
+            <span className={styles.metricValue}>
+              {message.author === "admin"
+                ? "оператор"
+                : message.author === "client"
+                  ? "пользователь"
+                  : message.author === "bot"
+                    ? "бот"
+                    : "нет данных"}
+            </span>
+          </div>
+          <div className={styles.metricRow}>
+            <span className={styles.metricLabel}>Запасной ответ (fallback)</span>
+            <span className={styles.metricValue}>
+              {message.fallback === undefined ? "нет данных" : message.fallback ? "да" : "нет"}
+            </span>
+          </div>
+        </div>
       )}
 
       {/* Источники RAG */}

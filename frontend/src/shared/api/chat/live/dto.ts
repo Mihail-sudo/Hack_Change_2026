@@ -5,6 +5,9 @@
  *
  * Backend не предоставляет: sources RAG, responseTimeMs, quickReplies, lead payload
  * с полями need/solutions/openQuestions — соответствующие места помечены.
+ *
+ * GET /admin/dialogs НЕ используется в публичном виджете: без авторизации он
+ * возвращает диалоги всех пользователей (см. liveChatApi.listSessions).
  */
 
 /** Шаблон session_id: ^[A-Za-z0-9_-]{8,128}$ (crypto.randomUUID подходит). */
@@ -26,6 +29,15 @@ export interface ChatResponseDto {
   mode: DialogModeDto;
 }
 
+// POST /chat/handoff → 200 (запрос живого оператора)
+export interface HandoffRequestDto {
+  session_id: string;
+}
+
+export interface HandoffResponseDto {
+  ok: boolean;
+}
+
 // GET /chat/{session_id}/messages
 export type MessageRoleDto = "user" | "assistant";
 export type MessageAuthorDto = "client" | "bot" | "admin";
@@ -42,21 +54,6 @@ export interface MessagesReadDto {
   session_id: string;
   mode: DialogModeDto;
   messages: MessageReadDto[];
-}
-
-// GET /admin/dialogs — список диалогов (история сессий)
-export interface DialogReadDto {
-  session_id: string;
-  mode: DialogModeDto;
-  handoff_requested_at: string | null;
-  created_at: string;
-  updated_at: string;
-  messages_count: number;
-  last_message: string | null;
-}
-
-export interface DialogListResponseDto {
-  dialogs: DialogReadDto[];
 }
 
 // POST /leads → 201

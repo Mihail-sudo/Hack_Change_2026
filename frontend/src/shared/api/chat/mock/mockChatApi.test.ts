@@ -151,4 +151,24 @@ describe("mockChatApi", () => {
     controller.abort();
     await expect(promise).rejects.toMatchObject({ name: "AbortError" });
   });
+
+  it("listNewMessages не выдумывает оператора: пустой список, режим bot, курсор сохраняется", async () => {
+    const api = createApi();
+    const result = await api.listNewMessages("any-session", 17);
+
+    expect(result).toEqual({ mode: "bot", messages: [], lastId: 17 });
+  });
+
+  it("requestHandoff в mock имитирует успех (заявка оператору поставлена в очередь)", async () => {
+    const api = createApi();
+    await expect(api.requestHandoff("any-session")).resolves.toBeUndefined();
+  });
+
+  it("requestHandoff поддерживает симуляцию ошибки", async () => {
+    const api = createApi();
+    setMockFailureMode({ mode: "always" });
+    await expect(api.requestHandoff("any-session")).rejects.toMatchObject({
+      code: "SERVER_ERROR",
+    });
+  });
 });

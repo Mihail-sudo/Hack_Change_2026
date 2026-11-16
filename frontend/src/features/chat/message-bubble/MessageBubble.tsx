@@ -1,4 +1,4 @@
-import { Bot, User, RotateCcw } from "lucide-react";
+import { Bot, User, RotateCcw, Headphones } from "lucide-react";
 import type { ChatMessage } from "@/shared/types/chat";
 import { RecommendationCard } from "../recommendation-card";
 import { TypingIndicator } from "../typing-indicator";
@@ -21,23 +21,33 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const isPending = message.status === "pending";
   const isError = message.status === "error";
+  // Реальные данные backend: MessageRead.author === "admin" — реплика живого оператора.
+  const isOperator = message.author === "admin";
 
   return (
     <article
       className={`${styles.bubble} ${isUser ? styles.bubbleUser : styles.bubbleAssistant} ${
         isError ? styles.bubbleError : ""
       }`}
-      aria-label={isUser ? "Сообщение пользователя" : "Ответ консультанта"}
+      aria-label={
+        isUser ? "Сообщение пользователя" : isOperator ? "Сообщение оператора" : "Ответ консультанта"
+      }
       data-status={message.status}
     >
       <div
         className={`${styles.avatar} ${isUser ? styles.avatarUser : styles.avatarAssistant}`}
         aria-hidden="true"
       >
-        {isUser ? <User size={16} /> : <Bot size={16} />}
+        {isUser ? <User size={16} /> : isOperator ? <Headphones size={16} /> : <Bot size={16} />}
       </div>
 
       <div className={styles.content}>
+        {isOperator && (
+          <span className={styles.operatorTag}>
+            <Headphones size={11} aria-hidden="true" />
+            Оператор
+          </span>
+        )}
         {isPending ? (
           <TypingIndicator />
         ) : (

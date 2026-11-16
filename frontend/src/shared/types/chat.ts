@@ -1,5 +1,11 @@
 export type ChatRole = "user" | "assistant" | "system";
 
+/** Режим диалога на backend (DialogModeDto): "bot" — агент, "admin" — оператор. */
+export type DialogMode = "bot" | "admin";
+
+/** Автор сообщения на backend (MessageAuthorDto). */
+export type MessageAuthor = "client" | "bot" | "admin";
+
 export interface KnowledgeSource {
   id: string;
   title: string;
@@ -23,6 +29,15 @@ export interface ChatMessage {
    * Концептуальное поле контракта — сверить с backend-командой.
    */
   quickReplies?: string[];
+  /**
+   * Автор сообщения на backend ("client" | "bot" | "admin").
+   * Заполняется только для сообщений, загруженных с сервера; "admin" — реплика оператора.
+   */
+  author?: MessageAuthor;
+  /** Числовой id сообщения в БД backend (для дедупликации и курсора after_id). */
+  serverId?: number;
+  /** true — агент упал, backend вернул запасной ответ (ChatResponse.fallback). */
+  fallback?: boolean;
 }
 
 export interface ChatSession {
@@ -32,6 +47,8 @@ export interface ChatSession {
   status: "active" | "completed";
   messages: ChatMessage[];
   leadId?: string;
+  /** Заголовок для списка сессий (первая реплика пользователя), если известен. */
+  title?: string;
 }
 
 export interface LeadInput {

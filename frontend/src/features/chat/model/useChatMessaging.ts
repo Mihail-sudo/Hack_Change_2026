@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import type { ChatMessage } from "@/shared/types/chat";
 import { useChatSession, useSendMessage } from "./useChat";
+import { useOperatorPolling } from "./useOperatorPolling";
 
 export interface ChatMessaging {
   messages: ChatMessage[];
@@ -12,6 +13,8 @@ export interface ChatMessaging {
   quickReplies: string[];
   /** Ошибка загрузки активной сессии истории. */
   error: Error | null;
+  /** Режим диалога на backend: "bot" — агент, "admin" — подключился оператор. */
+  dialogMode: "bot" | "admin";
   send: (content: string) => void;
   retry: () => void;
   /** Повторить загрузку истории текущей сессии. */
@@ -19,10 +22,13 @@ export interface ChatMessaging {
   isMutating: boolean;
 }
 
-/** Фасад над отправкой/повтором для конкретной сессии. */
+/** Фасад над отправкой/повтором/поллингом для конкретной сессии. */
 export function useChatMessaging(sessionId: string | null): ChatMessaging {
   const { data: session, error, refetch } = useChatSession(sessionId);
   const sendMessage = useSendMessage();
+  // Поллинг только активной сессии: реплики оператора приходят через
+  // GET /chat/{session_id}/messages?after_id (см. useOperatorPolling).
+  const { dialogMode, pollNow } = useOperatorPolling(sessionId);
 
   const messages = session?.messages ?? [];
   const hasPending = messages.some((m) => m.status === "pending");
@@ -39,15 +45,23 @@ export function useChatMessaging(sessionId: string | null): ChatMessaging {
       const trimmed = content.trim();
       // Блокировка повторной отправки: ассистент ещё отвечает или мутация выполняется
       if (!sessionId || !trimmed || hasPending || sendMessage.isPending) return;
-      sendMessage.mutate({ sessionId, content: trimmed });
+      sendMessage.mutate(
+        { sessionId, content: trimmed },
+        // Немедленный опрос после ответа: курсор поллинга проходит мимо только что
+        // сохранённых на сервере реплик, чтобы следующий интервал не вернул дубликаты.
+        { onSuccess: () => pollNow() }
+      );
     },
-    [sessionId, hasPending, sendMessage]
+    [sessionId, hasPending, sendMessage, pollNow]
   );
 
   const retry = useCallback(() => {
     if (!sessionId || !lastFailed || sendMessage.isPending) return;
-    sendMessage.mutate({ sessionId, content: lastFailed.content });
-  }, [sessionId, lastFailed, sendMessage]);
+    sendMessage.mutate(
+      { sessionId, content: lastFailed.content },
+      { onSuccess: () => pollNow() }
+    );
+  }, [sessionId, lastFailed, sendMessage, pollNow]);
 
   const refetchHistory = useCallback(() => {
     void refetch();
@@ -58,6 +72,7 @@ export function useChatMessaging(sessionId: string | null): ChatMessaging {
     hasPending,
     lastFailed,
     quickReplies,
+    dialogMode,
     error: error ?? null,
     send,
     retry,

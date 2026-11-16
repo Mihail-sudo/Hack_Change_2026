@@ -1,30 +1,38 @@
 import { apiClient } from "@/shared/api/apiClient";
 import type { ChatMessage, ChatSession, SendMessageResponse } from "@/shared/types/chat";
-import type { ChatApi, SendMessageOptions } from "../types";
+import type { ChatApi, NewMessagesResult, SendMessageOptions } from "../types";
 import type {
   ChatRequestDto,
   ChatResponseDto,
-  DialogListResponseDto,
+  HandoffRequestDto,
+  HandoffResponseDto,
   MessagesReadDto,
 } from "./dto";
+import { toAssistantMessage, toSessionFromMessages, toDomainMessage } from "./mapping";
 import {
-  toAssistantMessage,
-  toSessionFromDialog,
-  toSessionFromMessages,
-} from "./mapping";
+  createLocalSessionRegistry,
+  toSessionFromMeta,
+  type LocalSessionRegistry,
+} from "./localSessions";
 
 /**
- * Live-реализация ChatApi на реальном backend (см. аудит: openapi.json).
+ * Live-реализация ChatApi на реальном backend (контракт из openapi.json).
  *
  * Особенности backend, отражённые здесь:
  * - Нет эндпоинта «создать сессию»: диалог создаётся первым POST /chat.
  *   ID генерируется локально (crypto.randomUUID подходит под шаблон
  *   ^[A-Za-z0-9_-]{8,128}$); приветствие НЕ выдумывается — пустой диалог
  *   показывается как пустой.
- * - Список сессий берётся из GET /admin/dialogs — других источников нет.
+ * - Список сессий — ЛОКАЛЬНЫЙ реестр сессий этого браузера. Endpoint
+ *   GET /admin/dialogs существует, но без авторизации возвращает диалоги всех
+ *   пользователей — вызывать его из публичного виджета небезопасно (аудит,
+ *   backend/app/api/admin.py). Нужен user-scoped endpoint — см. отчёт.
  * - История сессии — GET /chat/{session_id}/messages (транскрипт в SQLite).
- * - POST /chat возвращает {reply, done, fallback, mode}; message собирается
- *   на frontend, responseTimeMs измеряется на frontend.
+ * - Поллинг новых сообщений (реплики оператора) — тот же endpoint с курсором
+ *   after_id; MessageRead.author различает client/bot/admin.
+ * - POST /chat возвращает {reply, done, fallback, mode}; responseTimeMs
+ *   измеряется на frontend.
+ * - POST /chat/handoff — запрос живого оператора.
  * - mode="admin": reply пустой — сообщение доставлено оператору, ответ придёт
  *   через поллинг сообщений. Пустой ассистент-ответ отбрасывается в useChat.
  * - Никаких скрытых fallback на mock: ошибка API пробрасывается вызывающему коду.
@@ -33,9 +41,9 @@ import {
 const CHAT_TIMEOUT_MS = 60_000; // реальный LLM-агент может отвечать дольше дефолтных 30 с
 const LIST_TIMEOUT_MS = 15_000;
 
-export function createLiveChatApi(): ChatApi {
+export function createLiveChatApi(registry: LocalSessionRegistry = createLocalSessionRegistry()) {
   return {
-    mode: "live",
+    mode: "live" as const,
 
     async createSession(
       _initialMessages?: ChatMessage[],
@@ -43,21 +51,20 @@ export function createLiveChatApi(): ChatApi {
     ): Promise<ChatSession> {
       // Backend создаёт диалог только при первом POST /chat — HTTP-запрос не нужен.
       const now = new Date().toISOString();
-      return {
+      const session: ChatSession = {
         id: crypto.randomUUID(),
         createdAt: now,
         updatedAt: now,
         status: "active",
         messages: [],
       };
+      registry.register(session.id);
+      return session;
     },
 
-    async listSessions(signal?: AbortSignal): Promise<ChatSession[]> {
-      const dto = await apiClient<DialogListResponseDto>("/admin/dialogs", {
-        signal,
-        timeoutMs: LIST_TIMEOUT_MS,
-      });
-      return dto.dialogs.map(toSessionFromDialog);
+    async listSessions(_signal?: AbortSignal): Promise<ChatSession[]> {
+      // Только сессии, созданные в этом браузере (см. комментарий выше про /admin/dialogs).
+      return registry.list().map(toSessionFromMeta);
     },
 
     async getSession(sessionId: string, signal?: AbortSignal): Promise<ChatSession> {
@@ -65,7 +72,16 @@ export function createLiveChatApi(): ChatApi {
         `/chat/${encodeURIComponent(sessionId)}/messages`,
         { signal, timeoutMs: LIST_TIMEOUT_MS }
       );
-      return toSessionFromMessages(dto);
+      const session = toSessionFromMessages(dto);
+      // Синхронизируем метаданные локального реестра с сервером.
+      if (registry.has(sessionId)) {
+        for (const message of session.messages) {
+          if (message.role === "user" && message.author === "client") {
+            registry.recordUserMessage(sessionId, message.content, message.createdAt);
+          }
+        }
+      }
+      return session;
     },
 
     async sendMessage({
@@ -82,10 +98,37 @@ export function createLiveChatApi(): ChatApi {
       });
       const responseTimeMs = Math.round(performance.now() - startedAt);
 
+      // Реплика пользователя сохранена на сервере — фиксируем в локальном реестре.
+      registry.recordUserMessage(sessionId, content, new Date().toISOString());
+
       return {
-        message: toAssistantMessage(dto.reply, sessionId, responseTimeMs),
+        message: toAssistantMessage(dto.reply, sessionId, responseTimeMs, dto.fallback),
         sessionId,
       };
+    },
+
+    async listNewMessages(
+      sessionId: string,
+      afterId: number,
+      signal?: AbortSignal
+    ): Promise<NewMessagesResult> {
+      const dto = await apiClient<MessagesReadDto>(
+        `/chat/${encodeURIComponent(sessionId)}/messages?after_id=${afterId}`,
+        { signal, timeoutMs: LIST_TIMEOUT_MS }
+      );
+      const messages = dto.messages.map((m) => toDomainMessage(m, sessionId));
+      const lastId =
+        dto.messages.length > 0 ? Math.max(...dto.messages.map((m) => m.id)) : afterId;
+      return { mode: dto.mode, messages, lastId };
+    },
+
+    async requestHandoff(sessionId: string, signal?: AbortSignal): Promise<void> {
+      const body: HandoffRequestDto = { session_id: sessionId };
+      await apiClient<HandoffResponseDto>("/chat/handoff", {
+        method: "POST",
+        body: JSON.stringify(body),
+        signal,
+      });
     },
   } satisfies ChatApi;
 }

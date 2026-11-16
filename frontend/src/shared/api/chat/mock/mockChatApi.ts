@@ -1,6 +1,6 @@
 import { ApiClientError } from "@/shared/api/apiClient";
 import type { ChatMessage, ChatSession, SendMessageResponse } from "@/shared/types/chat";
-import type { ChatApi, SendMessageOptions } from "../types";
+import type { ChatApi, NewMessagesResult, SendMessageOptions } from "../types";
 import { consumeMockFailure } from "./mockFailure";
 import { createGreetingMessage, nextAssistantStep } from "./mockScript";
 import { MockChatStore } from "./mockStore";
@@ -132,6 +132,23 @@ export function createMockChatApi(options: MockChatApiOptions = {}): ChatApi {
       store.appendMessages(sessionId, [assistantMessage]);
 
       return { message: assistantMessage, sessionId };
+    },
+
+    async listNewMessages(
+      _sessionId: string,
+      afterId: number,
+      signal?: AbortSignal
+    ): Promise<NewMessagesResult> {
+      // В mock нет оператора: новых сообщений нет, режим всегда "bot".
+      await abortAwareDelay(60, signal);
+      return { mode: "bot", messages: [], lastId: afterId };
+    },
+
+    async requestHandoff(_sessionId: string, signal?: AbortSignal): Promise<void> {
+      // Mock имитирует успешную постановку в очередь операторов (реальный ИИ/оператор отсутствует).
+      await abortAwareDelay(200, signal);
+      const failure = consumeMockFailure();
+      if (failure) throw failure;
     },
   };
 }

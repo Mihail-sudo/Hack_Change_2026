@@ -1,4 +1,5 @@
 import { Zap, Plus, BarChart3, X, AlertCircle } from "lucide-react";
+import type { ChatSession } from "@/shared/types/chat";
 import {
   useChatSessions,
   useCreateSession,
@@ -15,13 +16,16 @@ function formatDate(dateString: string): string {
   });
 }
 
-/** Заголовок сессии: фрагмент первого сообщения пользователя либо дата. */
-function sessionTitle(firstUserMessage: string | undefined, createdAt: string): string {
+/** Заголовок сессии: сохранённый title (первая реплика пользователя) либо дата. */
+function sessionTitle(session: { title?: string; messages: ChatSession["messages"]; createdAt: string }): string {
+  const saved = session.title?.trim();
+  if (saved) return saved.length < session.title!.trim().length ? `${saved}…` : saved;
+  const firstUserMessage = session.messages.find((m) => m.role === "user")?.content;
   if (firstUserMessage) {
     const snippet = firstUserMessage.trim().slice(0, 40);
     return snippet.length < firstUserMessage.trim().length ? `${snippet}…` : snippet;
   }
-  return `Диалог от ${formatDate(createdAt)}`;
+  return `Диалог от ${formatDate(session.createdAt)}`;
 }
 
 interface SessionHistoryProps {
@@ -110,16 +114,10 @@ export function SessionHistory({ onClose }: SessionHistoryProps) {
             className={`${styles.sessionItem} ${session.id === activeSessionId ? styles.sessionItemActive : ""}`}
             onClick={() => handleSelectSession(session.id)}
             aria-current={session.id === activeSessionId ? "true" : undefined}
-            aria-label={`Диалог: ${sessionTitle(
-              session.messages.find((m) => m.role === "user")?.content,
-              session.createdAt
-            )}`}
+            aria-label={`Диалог: ${sessionTitle(session)}`}
           >
             <span className={styles.sessionTitle}>
-              {sessionTitle(
-                session.messages.find((m) => m.role === "user")?.content,
-                session.createdAt
-              )}
+              {sessionTitle(session)}
             </span>
             <span className={styles.sessionDate}>{formatDate(session.updatedAt)}</span>
           </button>

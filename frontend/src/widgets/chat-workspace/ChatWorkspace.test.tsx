@@ -150,3 +150,21 @@ describe("ChatWorkspace — пользовательский сценарий ч
     expect(bubble.textContent).toBe(longWord);
   }, 20000);
 });
+
+describe("ChatWorkspace — вызов оператора (POST /chat/handoff)", () => {
+  it("кнопка «Позвать оператора» отправляет запрос и подтверждает вызов", async () => {
+    const user = userEvent.setup();
+    renderWorkspace();
+
+    await waitFor(() => expect(screen.getByLabelText("Позвать оператора")).toBeEnabled(), {
+      timeout: 4000,
+    });
+
+    await user.click(screen.getByLabelText("Позвать оператора"));
+
+    // Успех подтверждается сообщением (mock имитирует успешный POST /chat/handoff)
+    expect(
+      await screen.findAllByText(/Оператор вызван/i, undefined, { timeout: 4000 })
+    ).not.toHaveLength(0);
+  });
+});

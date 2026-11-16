@@ -78,4 +78,33 @@ describe("DebugPanel", () => {
 
     expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
+
+  it("показывает fallback-статус ответа из ChatResponse (реальные данные backend)", () => {
+    renderPanel([assistantMessage({ fallback: true })]);
+
+    expect(screen.getByText("Запасной ответ (fallback)")).toBeInTheDocument();
+    expect(screen.getByText("да")).toBeInTheDocument();
+  });
+
+  it("fallback-статус отсутствует → «нет данных», а не выдуманное значение", () => {
+    // author задан (секция показывается), fallback backend не прислал
+    renderPanel([assistantMessage({ author: "bot", fallback: undefined })]);
+
+    expect(screen.getByText("Запасной ответ (fallback)")).toBeInTheDocument();
+    // «нет данных» и в секции fallback, и в источниках RAG (backend их не вернул)
+    expect(screen.getAllByText("нет данных").length).toBeGreaterThan(0);
+  });
+
+  it("реплика живого оператора отображается с автором «оператор» (MessageRead.author=admin)", () => {
+    renderPanel([assistantMessage({ author: "admin", id: "srv-12", serverId: 12 })]);
+
+    expect(screen.getByText("Автор ответа")).toBeInTheDocument();
+    expect(screen.getByText("оператор")).toBeInTheDocument();
+  });
+
+  it("реплика бота отображается с автором «бот»", () => {
+    renderPanel([assistantMessage({ author: "bot" })]);
+
+    expect(screen.getByText("бот")).toBeInTheDocument();
+  });
 });
