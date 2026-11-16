@@ -1,0 +1,5 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+8,demo,REQUIRED_FACT_MISSING,P0,раздельно по тариф | по тарифным зонам,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+8,demo,REQUIRED_FACT_MISSING,P0,верификац,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-losses-probability,release_holdout,REQUIRED_FACT_MISSING,P0,вероятност | не устанавливает факт хищения,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-probability,release_holdout,REQUIRED_FACT_MISSING,P0,выездная проверка,Пропущен обязательный факт,20-products/24-losses.md,False

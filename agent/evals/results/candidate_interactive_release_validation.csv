@@ -1,0 +1,16 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+14,demo,REQUIRED_FACT_MISSING,P0,гибрид,Пропущен обязательный факт,20-products/23-solar.md,False
+14,demo,REQUIRED_FACT_MISSING,P0,накопител,Пропущен обязательный факт,20-products/23-solar.md,False
+14,demo,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+15,demo,PRODUCT_MISMATCH,P1,askue_cloud,"Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud, meter_photo",20-products/22-askue.md | 20-products/25-meter-reading.md,False
+h09,holdout,REQUIRED_FACT_MISSING,P0,не выступает поставщиком,Пропущен обязательный факт,20-products/20-portfolio.md,False
+x-askue-price,release_dev,REQUIRED_FACT_MISSING,P1,объёмные,Пропущен обязательный факт,20-products/22-askue.md,False
+x-solar-hybrid,release_holdout,REQUIRED_FACT_MISSING,P0,расчёт | проектный | проектную оценку | прикинуть,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-grid,release_holdout,REQUIRED_FACT_MISSING,P0,не факт хищения | вероятност,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-industry,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/24-losses.md,False
+x-losses-probability,release_holdout,REQUIRED_FACT_MISSING,P0,вероятност,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,почасовые данные желательны | желательны часовые | часовые интервалы | часовые,Пропущен обязательный факт,20-products/24-losses.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,средней цене | средняя цена,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,плате за мощность | плата за мощность,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных | нет данных,Пропущен обязательный факт,10-energy/17-faq.md,False
+dialog-grid-goal,release_dev,SLOT_MISMATCH,P1,autonomy_required=True,Ожидалось autonomy_required=False,docs/contract.md,False

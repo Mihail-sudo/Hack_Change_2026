@@ -1,0 +1,11 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+h01,holdout,REQUIRED_FACT_MISSING,P0,не,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,20 МВт,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,посредник,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,регион,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,CLARIFICATION_MISSING,P0,region,Не задан обязательный уточняющий вопрос,10-energy/12-power-thresholds.md,False
+h01,holdout,OREM_DIRECT_750,P0,Прямое участие в ОРЭМ доступно от 750 кВт.,Прямое участие приписано порогу 750 кВт,10-energy/12-power-thresholds.md,True
+h08,holdout,REQUIRED_FACT_MISSING,P1,юридически возможно,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+h08,holdout,REQUIRED_FACT_MISSING,P1,общее собрание,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+h08,holdout,REQUIRED_FACT_MISSING,P1,не является типовым | пока не является | не типовой,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+h11,holdout,CANDIDATE_MISSING,P0,,Ответ кандидата отсутствует,20-products/20-portfolio.md,False

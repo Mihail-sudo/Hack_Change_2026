@@ -1,0 +1,57 @@
+[
+  {
+    "id": "snt-metering",
+    "question": "Мы СНТ на 120 домов. Хотим видеть расход по каждому дому и бороться с неплательщиками.",
+    "required": ["платформ"],
+    "forbidden_products": ["commercial_losses"]
+  },
+  {
+    "id": "orem-too-small",
+    "question": "У производства 500 кВт. Можем выйти на ОРЭМ?",
+    "required": ["750"],
+    "required_any": ["невозмож", "нельзя", "нет"],
+    "forbidden_products": ["orem"]
+  },
+  {
+    "id": "orem-intermediary",
+    "question": "У производства 2 МВт. Хотим снизить закупку через ОРЭМ.",
+    "required": ["посредник"],
+    "expected_products": ["orem"]
+  },
+  {
+    "id": "solar-autonomy",
+    "question": "Нужна солнечная станция, чтобы производство работало при отключении внешней сети.",
+    "required": ["гибрид", "отключ"],
+    "expected_products": ["solar"],
+    "expected_configurations": {"solar": "hybrid"},
+    "forbidden": ["сетевая станция обеспечит питание при отключении"]
+  },
+  {
+    "id": "meter-photo-private",
+    "question": "Я частный абонент. Можно ли передавать показания электросчётчика напрямую через МТС по фото?",
+    "required": ["верификац"],
+    "required_any": ["частн", "организац", "напрямую"],
+    "forbidden_products": ["meter_photo"]
+  },
+  {
+    "id": "meter-photo-b2b",
+    "question": "Мы управляющая компания. Можно ли использовать фото счётчиков жителей для передачи показаний?",
+    "required": ["фото", "верификац"],
+    "expected_products": ["meter_photo"]
+  },
+  {
+    "id": "out-of-scope",
+    "question": "Вы продаёте квадрокоптеры?",
+    "required_any": ["не вход", "не продаёт"],
+    "expected_action": "out_of_scope"
+  },
+  {
+    "id": "solar-price-history",
+    "history": [
+      {"role": "user", "content": "Расскажите о солнечных станциях для бизнеса"},
+      {"role": "assistant", "content": "Для бизнеса доступны сетевые и гибридные солнечные станции."}
+    ],
+    "question": "А сколько ориентировочно стоит сетевая станция?",
+    "required": ["70"]
+  }
+]

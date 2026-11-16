@@ -1,0 +1,6 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+fh-orem-power-unknown,final_holdout,ACTION_MISMATCH,P0,answer,Ожидалось действие clarify,10-energy/12-power-thresholds.md,False
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,вероятност | оценка вероятности,Пропущен обязательный факт,20-products/24-losses.md,False
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,выездная проверка,Пропущен обязательный факт,20-products/24-losses.md,False
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,не,Пропущен обязательный факт,20-products/24-losses.md,False
+fh-energy-power-units,final_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность | важна присоединённая мощность | нет данных | не указана присоединённая мощность,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False

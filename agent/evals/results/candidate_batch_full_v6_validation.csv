@@ -1,0 +1,4 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция | нет подтверждённой информации | не ведёт учёт воды | не указано | для воды есть отдельное решение,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-losses-sales-null,release_holdout,REQUIRED_FACT_MISSING,P0,рекомендация не даётся | уточнить | неизвестно | если только нет | подскажите,Пропущен обязательный факт,20-products/24-losses.md,False

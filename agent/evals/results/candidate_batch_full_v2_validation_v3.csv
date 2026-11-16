@@ -1,0 +1,63 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+1,demo,REQUIRED_FACT_MISSING,P0,регион,Пропущен обязательный факт,20-products/23-solar.md,False
+2,demo,REQUIRED_FACT_MISSING,P1,регион,Пропущен обязательный факт,20-products/23-solar.md,False
+4,demo,REQUIRED_FACT_MISSING,P0,25 лет,Пропущен обязательный факт,20-products/23-solar.md,False
+4,demo,REQUIRED_FACT_MISSING,P0,демонтаж | переустанов | демонтир,Пропущен обязательный факт,20-products/23-solar.md,False
+7,demo,REQUIRED_FACT_MISSING,P1,одном интерфейсе | одном кабинете,Пропущен обязательный факт,20-products/22-askue.md,False
+10,demo,REQUIRED_FACT_MISSING,P1,ценовая категория,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+14,demo,REQUIRED_FACT_MISSING,P0,днём и вечером | дневного и вечернего,Пропущен обязательный факт,20-products/23-solar.md,False
+15,demo,REQUIRED_FACT_MISSING,P1,переч | количество,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+15,demo,REQUIRED_FACT_MISSING,P1,по фотографии | по фото,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+15,demo,REQUIRED_FACT_MISSING,P1,техник,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+16,demo,REQUIRED_FACT_MISSING,P0,не установит факт хищения | вероятностн | приоритетных проверок,Пропущен обязательный факт,20-products/24-losses.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,модели | модель,Пропущен обязательный факт,20-products/22-askue.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,собираются показания | сбор данных,Пропущен обязательный факт,20-products/22-askue.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,телефон пока не нужен | без телефона,Пропущен обязательный факт,20-products/22-askue.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,регион,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,CLARIFICATION_MISSING,P0,region,Не задан обязательный уточняющий вопрос,10-energy/12-power-thresholds.md,False
+h02,holdout,REQUIRED_FACT_MISSING,P0,регион,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h02,holdout,CLARIFICATION_MISSING,P0,region,Не задан обязательный уточняющий вопрос,10-energy/12-power-thresholds.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,нет сетевых | без сетевых | если нет,Пропущен обязательный факт,20-products/24-losses.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,допускается | можно,Пропущен обязательный факт,20-products/24-losses.md,False
+h11,holdout,REQUIRED_FACT_MISSING,P1,остаются | сохраняется | не теряется,Пропущен обязательный факт,20-products/20-portfolio.md,False
+h12,holdout,REQUIRED_FACT_MISSING,P0,независимо от мощности | не зависит,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-20mw,release_holdout,REQUIRED_FACT_MISSING,P0,не гарантия | не гарантирует,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-office,release_holdout,REQUIRED_FACT_MISSING,P0,производственная нагрузка | производств,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-existing,release_dev,REQUIRED_FACT_MISSING,P1,повторный выход не требуется,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-existing,release_dev,REQUIRED_FACT_MISSING,P1,смены схемы,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-connected,release_holdout,REQUIRED_FACT_MISSING,P1,посредник | энергосбытовая компания,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-saving,release_holdout,REQUIRED_FACT_MISSING,P0,аудит,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/21-orem.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,огранич,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,сначала,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,затем подключение,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,общее собрание,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,не является типовым,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,зависит от объекта | индивидуальн,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-501,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-solar-diesel,release_holdout,REQUIRED_FACT_MISSING,P1,дизельной генерации,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-diesel,release_holdout,REQUIRED_FACT_MISSING,P1,изолированном объекте,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-price-hybrid,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-losses-retail,release_holdout,REQUIRED_FACT_MISSING,P0,не является электросетевой | не относится,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-true,release_holdout,REQUIRED_FACT_MISSING,P0,допускается | можно,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-industry,release_holdout,REQUIRED_FACT_MISSING,P0,не поиск коммерческих потерь | не предлагается,Пропущен обязательный факт,20-products/24-losses.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,B2B,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,верификации,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,не основание,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-heat,release_holdout,REQUIRED_FACT_MISSING,P0,отдельная доработка | не поддерживается,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-heat,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-gas,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-retention,release_holdout,REQUIRED_FACT_MISSING,P0,проект | условия,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,3–6 | с третьей по шестую,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,1–2 недоступны | первая и вторая недоступны,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,обязателен | требуется,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных,Пропущен обязательный факт,10-energy/17-faq.md,False
+x-solar-payback-guarantee,release_holdout,REQUIRED_FACT_MISSING,P0,специалист,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-payback-guarantee,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-losses-internal,release_holdout,REQUIRED_FACT_MISSING,P0,специалист,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-internal,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/24-losses.md,False
+x-energy-60,release_holdout,REQUIRED_FACT_MISSING,P0,не напрямую,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+dialog-correct-power,release_dev,CLARIFICATION_MISSING,P1,region,Не задан обязательный уточняющий вопрос,docs/contract.md,False

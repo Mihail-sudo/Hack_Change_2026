@@ -1,0 +1,6 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+x-askue-debt,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция | нет подтверждённой информации | не ведёт учёт воды | не указано | для воды есть отдельное решение | только в киловатт-часах | есть отдельное решение,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-solar-hybrid,release_holdout,REQUIRED_FACT_MISSING,P0,расчёт | проектный | проектную оценку,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,15–500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных,Пропущен обязательный факт,10-energy/17-faq.md,False

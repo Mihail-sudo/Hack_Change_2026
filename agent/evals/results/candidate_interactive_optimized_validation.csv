@@ -1,0 +1,13 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+8,demo,REQUIRED_FACT_MISSING,P0,раздельно по тариф | по тарифным зонам,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+12,demo,REQUIRED_FACT_MISSING,P0,аудит | провер | модернизации учёта,Пропущен обязательный факт,20-products/21-orem.md,False
+14,demo,ACTION_MISMATCH,P0,show_form,Ожидалось действие answer|clarify,20-products/23-solar.md,False
+16,demo,ACTION_MISMATCH,P0,show_form,Ожидалось действие answer|clarify,20-products/24-losses.md,False
+h09,holdout,REQUIRED_FACT_MISSING,P0,не выступает поставщиком | не является поставщиком,Пропущен обязательный факт,20-products/20-portfolio.md,False
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность | важна присоединённая мощность | нет данных | не указана присоединённая мощность,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,зависит от объекта | индивидуальн | конкретного объекта | под ваш объект | после обследования объекта,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,не менее года | не менее одного года | один год,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,день/ночь | день и ночь | дневное и ночное,Пропущен обязательный факт,20-products/24-losses.md,False
+dialog-known-power,release_dev,ACTION_MISMATCH,P1,show_form,Ожидалось действие answer|clarify,docs/contract.md,False
+dialog-known-region,release_dev,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: orem,docs/contract.md,False
+dialog-null-not-false,release_dev,CLARIFICATION_MISSING,P1,has_grid_assets,Не задан обязательный уточняющий вопрос,docs/contract.md,False

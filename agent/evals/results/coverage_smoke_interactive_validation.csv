@@ -1,0 +1,17 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+5,demo,REQUIRED_FACT_MISSING,P1,не обязательно | не надо менять | не нужно менять,Пропущен обязательный факт,20-products/22-askue.md,False
+5,demo,REQUIRED_FACT_MISSING,P1,других операторов,Пропущен обязательный факт,20-products/22-askue.md,False
+5,demo,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/22-askue.md,False
+12,demo,REQUIRED_FACT_MISSING,P0,аудит,Пропущен обязательный факт,20-products/21-orem.md,False
+12,demo,REQUIRED_FACT_MISSING,P0,750 кВт,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-749,release_holdout,REQUIRED_FACT_MISSING,P0,ниже 750,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-solar-501,release_holdout,REQUIRED_FACT_MISSING,P0,больше 500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-501,release_holdout,SLOT_MISMATCH,P0,segment='other',Ожидалось segment='industry',20-products/23-solar.md,False
+x-solar-501,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-solar-payback-single,release_holdout,REQUIRED_FACT_MISSING,P1,7–9,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,не менее года,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,день/ночь,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,почасовые данные желательны,Пропущен обязательный факт,20-products/24-losses.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,нельзя,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,средней цене,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,плате за мощность,Пропущен обязательный факт,10-energy/14-tariffs.md,False

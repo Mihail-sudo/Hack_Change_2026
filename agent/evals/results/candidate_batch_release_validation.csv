@@ -1,0 +1,8 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+x-orem-existing,release_dev,REQUIRED_FACT_MISSING,P1,повторный выход не требуется,Пропущен обязательный факт,20-products/21-orem.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,подбор | установка | после этого | после,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,затем подключение | после этого | их нужно установить | затем уже подключить | подключить их | их необходимо установить,Пропущен обязательный факт,20-products/22-askue.md,False
+x-solar-price-hybrid,release_holdout,REQUIRED_FACT_MISSING,P1,типовой сетевой,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-price-hybrid,release_holdout,REQUIRED_FACT_MISSING,P1,после обследования,Пропущен обязательный факт,20-products/23-solar.md,False
+x-photo-retention,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/25-meter-reading.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,небезопасно | несанкционировано | нельзя | опасно | запрещено | не могу,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False

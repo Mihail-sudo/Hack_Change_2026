@@ -1,0 +1,70 @@
+{
+  "decision": "СОГЛАСОВАНО",
+  "commit": "82333867cd15ec5df231b9213570938e05994c12",
+  "zip": "evals/results/guardrails_candidate.zip",
+  "sha256": "72abae5bbd7482ab29f04ddb2c1507c8942c98e917e6f5a9857b341d7f6c19ae",
+  "files": [
+    "agent.py",
+    "catalog.py",
+    "dialogue.py",
+    "domain.py",
+    "guardrails.py",
+    "leads.py",
+    "llm.py",
+    "prompts.py",
+    "recommendations.py",
+    "requirements.txt",
+    "solution.py",
+    "state.py"
+  ],
+  "batch": {
+    "total": 114,
+    "passed": 114,
+    "failed": 0,
+    "errors": 0,
+    "p0": 0,
+    "p1": 0
+  },
+  "interactive": {
+    "total": 114,
+    "passed": 114,
+    "failed": 0,
+    "errors": 0,
+    "p0": 0,
+    "p1": 0
+  },
+  "performance": {
+    "batch_mean_seconds": 5.543780701754386,
+    "batch_p95_seconds": 9.747,
+    "batch_total_seconds": 631.991,
+    "interactive_mean_seconds": 5.334394736842105,
+    "interactive_p95_seconds": 7.784,
+    "interactive_max_seconds": 8.612
+  },
+  "artifacts": {
+    "batch_results": "evals/results/candidate_batch_release_v3.json",
+    "batch_validation": "evals/results/candidate_batch_release_v3_validation.json",
+    "interactive_results": "evals/results/candidate_interactive_timeout4_final_v2.json",
+    "interactive_validation": "evals/results/candidate_interactive_timeout4_final_v2_validation.json",
+    "golden": "evals/golden_cases.json",
+    "red_list": "evals/red_list.json",
+    "coverage": "evals/rule_coverage.json"
+  },
+  "known_limitations": [
+    "Независимый доменный эксперт отчёт ещё не проверял.",
+    "Платформенная проверка кандидата ещё не выполнялась.",
+    "Локальные LLM-генерации не гарантируют идентичные ответы на другой инфраструктуре."
+  ],
+  "final_holdout": {
+    "batch": {
+      "total": 42,
+      "passed": 42,
+      "failed": 0
+    },
+    "interactive": {
+      "total": 42,
+      "passed": 42,
+      "failed": 0
+    }
+  }
+}

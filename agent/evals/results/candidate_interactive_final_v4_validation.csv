@@ -1,0 +1,30 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+12,demo,REQUIRED_FACT_MISSING,P0,аудит | провер | модернизации учёта,Пропущен обязательный факт,20-products/21-orem.md,False
+16,demo,REQUIRED_FACT_MISSING,P0,одного года | один год,Пропущен обязательный факт,20-products/24-losses.md,False
+16,demo,ACTION_MISMATCH,P0,show_form,Ожидалось действие answer|clarify,20-products/24-losses.md,False
+h09,holdout,REQUIRED_FACT_MISSING,P0,не продаёт электроэнергию | не продаем электроэнергию,Пропущен обязательный факт,20-products/20-portfolio.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция | нет подтверждённой информации | не ведёт учёт воды | не указано | для воды есть отдельное решение | только в киловатт-часах | есть отдельное решение | готовое решение,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-askue-price,release_dev,REQUIRED_FACT_MISSING,P1,объёмные,Пропущен обязательный факт,20-products/22-askue.md,False
+x-solar-grid-backup,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+x-solar-hybrid,release_holdout,REQUIRED_FACT_MISSING,P0,расчёт | проектный | проектную оценку | прикинуть,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-probability,release_holdout,REQUIRED_FACT_MISSING,P0,вероятност,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,почасовые данные желательны | желательны часовые | часовые интервалы | часовые,Пропущен обязательный факт,20-products/24-losses.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,средней цене | средняя цена,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,плате за мощность | плата за мощность,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+dialog-topic-reset,release_dev,CLARIFICATION_MISSING,P1,power_kw,Не задан обязательный уточняющий вопрос,docs/contract.md,False
+dialog-known-region,release_dev,SLOT_MISMATCH,P1,segment='other',Ожидалось segment='industry',docs/contract.md,False
+dialog-known-region,release_dev,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: orem,docs/contract.md,False
+dialog-null-not-false,release_dev,CLARIFICATION_MISSING,P1,has_grid_assets,Не задан обязательный уточняющий вопрос,docs/contract.md,False
+dialog-form-after-refusal,release_dev,SLOT_MISMATCH,P1,contact_refused=None,Ожидалось contact_refused=False,docs/contract.md,False
+dialog-form-after-refusal,release_dev,ACTION_MISMATCH,P1,clarify,Ожидалось действие show_form,docs/contract.md,False
+dialog-lead-nulls,release_dev,SLOT_MISMATCH,P1,full_name=None,Ожидалось full_name='Иван',docs/contract.md,False
+dialog-lead-nulls,release_dev,SLOT_MISMATCH,P1,phone=None,Ожидалось phone='+7 900 000-00-00',docs/contract.md,False
+dialog-lead-nulls,release_dev,SLOT_MISMATCH,P1,consent_pd=None,Ожидалось consent_pd=True,docs/contract.md,False
+dialog-lead-nulls,release_dev,SLOT_MISMATCH,P1,consent_evidence=None,Ожидалось consent_evidence='Согласен на обработку контактных данных. Экономию и сроки не обсуждали.',docs/contract.md,False
+dialog-lead-nulls,release_dev,SLOT_MISMATCH,P1,company=None,Ожидалось company='завод «Север»',docs/contract.md,False
+dialog-lead-nulls,release_dev,ACTION_MISMATCH,P1,clarify,Ожидалось действие handover,docs/contract.md,False
+h-dialog-outscope,release_holdout,ACTION_MISMATCH,P0,clarify,Ожидалось действие out_of_scope,docs/contract.md,False
+h-dialog-refusal,release_holdout,SLOT_MISMATCH,P0,contact_refused=None,Ожидалось contact_refused=True,docs/contract.md,False
+h-dialog-phone,release_holdout,SLOT_MISMATCH,P0,full_name=None,Ожидалось full_name='Иван',docs/contract.md,False
+h-dialog-phone,release_holdout,SLOT_MISMATCH,P0,company=None,Ожидалось company='завод «Север»',docs/contract.md,False
+h-dialog-phone,release_holdout,SLOT_MISMATCH,P0,phone=None,Ожидалось phone='+7 900 000-00-00',docs/contract.md,False

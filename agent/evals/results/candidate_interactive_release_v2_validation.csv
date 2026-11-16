@@ -1,0 +1,7 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+15,demo,PRODUCT_MISMATCH,P1,askue_cloud,"Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud, meter_photo",20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-askue-price,release_dev,REQUIRED_FACT_MISSING,P1,объёмные,Пропущен обязательный факт,20-products/22-askue.md,False
+x-losses-data,release_holdout,REQUIRED_FACT_MISSING,P1,почасовые данные желательны | желательны часовые | часовые интервалы | часовые,Пропущен обязательный факт,20-products/24-losses.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,средней цене | средняя цена,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-bill,release_dev,REQUIRED_FACT_MISSING,P1,плате за мощность | плата за мощность,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных | нет данных,Пропущен обязательный факт,10-energy/17-faq.md,False

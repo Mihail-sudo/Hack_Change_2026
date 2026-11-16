@@ -1,0 +1,2 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание | не занимается взысканием | требуют обращения к специалисту | выходит за рамки функционала,Пропущен обязательный факт,20-products/22-askue.md,False

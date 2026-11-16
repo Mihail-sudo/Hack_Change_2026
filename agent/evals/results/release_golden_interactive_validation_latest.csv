@@ -1,0 +1,15 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+4,demo,PRODUCT_MISMATCH,P0,solar,Набор рекомендованных продуктов не совпадает с ожидаемым: ∅,20-products/23-solar.md,False
+16,demo,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: commercial_losses,20-products/24-losses.md,False
+h03,holdout,SLOT_MISMATCH,P0,power_kw=400,Ожидалось power_kw=750,10-energy/12-power-thresholds.md,False
+h04,holdout,ENERGY_670,P0,От 670 кВт доступны только ценовые категории с третьей по шестую; первая и вторая недоступны.,Категории 1–2 предложены от 670 кВт,10-energy/12-power-thresholds.md,True
+h06,holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,10-energy/15-microgeneration.md,False
+x-orem-existing,release_dev,SLOT_MISMATCH,P1,segment='industry',Ожидалось segment='other',20-products/21-orem.md,False
+x-askue-debt,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/22-askue.md,False
+x-solar-501,release_holdout,SLOT_MISMATCH,P0,segment='industry',Ожидалось segment='other',20-products/23-solar.md,False
+x-solar-payback-both,release_holdout,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+x-solar-payback-single,release_holdout,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+x-solar-price-hybrid,release_holdout,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+x-losses-retail,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/24-losses.md,False
+x-losses-sales-false,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/24-losses.md,False
+dialog-grid-goal,release_dev,SLOT_MISMATCH,P1,autonomy_required=None,Ожидалось autonomy_required=False,docs/contract.md,False

@@ -1,0 +1,3 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+18,demo,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud,20-products/22-askue.md,False
+x-askue-rso,release_holdout,REQUIRED_FACT_MISSING,P1,самостоятельно,Пропущен обязательный факт,20-products/22-askue.md,False

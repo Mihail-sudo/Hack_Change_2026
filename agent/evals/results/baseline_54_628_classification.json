@@ -1,0 +1,739 @@
+{
+  "summary": {
+    "retrieval": 44,
+    "generation": 8
+  },
+  "items": [
+    {
+      "case_id": "1",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "регион",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "2",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "регион",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "4",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "25 лет",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "4",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "демонтаж | переустанов | демонтир",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "4",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "возраст кровли | сколько лет",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "5",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "не обязательно | не надо менять | не нужно менять",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "5",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "других операторов",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "9",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "верификац | проверяются",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "10",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "ценовая категория",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/14-tariffs.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "12",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "750 кВт",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "13",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "бесплат",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/26-general.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "13",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "не обязывает | ни к чему",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/26-general.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "14",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "днём и вечером | дневного и вечернего",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "15",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "переч | количество",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md",
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "15",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "по фотографии | по фото | фотография",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md",
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "15",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "техник",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md",
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "16",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не установит факт хищения | вероятностн | приоритетных проверок",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/24-losses.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "18",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "модели | модель",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "18",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "собираются показания | сбор данных | сбор показаний | получения данных | как сейчас | сбора показаний",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "18",
+      "case_set": "demo",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "телефон пока не нужен | без телефона",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/22-askue.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "h01",
+      "case_set": "holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "регион",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "h01",
+      "case_set": "holdout",
+      "mode": "batch",
+      "rule_id": "CLARIFICATION_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "region",
+      "message": "Не задан обязательный уточняющий вопрос",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "h02",
+      "case_set": "holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "регион",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "h02",
+      "case_set": "holdout",
+      "mode": "batch",
+      "rule_id": "CLARIFICATION_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "region",
+      "message": "Не задан обязательный уточняющий вопрос",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "h12",
+      "case_set": "holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "независимо от мощности | не зависит",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-20mw",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не гарантия | не гарантирует | не является гарантией",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-kwh",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность | важна присоединённая мощность | нет данных | не указана присоединённая мощность",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-office",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "производственная нагрузка | производств | производственной нагрузки",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-existing",
+      "case_set": "release_dev",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "повторный выход не требуется",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-existing",
+      "case_set": "release_dev",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "смены схемы",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-connected",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "посредник | энергосбытовая компания | посредника",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-saving",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "аудит | анализ",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-orem-saving",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/21-orem.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-apartment",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "общее собрание",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/15-microgeneration.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-apartment",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "не является типовым | не типовой",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/15-microgeneration.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-501",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-price-hybrid",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "после обследования",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-price-hybrid",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-losses-retail",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не является электросетевой | не относится | не электросетев",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/24-losses.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-photo-private",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "частному абоненту | частный абонент",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-photo-heat",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не готовая функция",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-photo-heat",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-photo-gas",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не готовая функция",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-photo-gas",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/25-meter-reading.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-energy-670",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "1–2 недоступны | первая и вторая недоступны | 1-я и 2-я недоступны",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-energy-voltage",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P1",
+      "category": "retrieval",
+      "quote": "независимо от мощности | не зависит",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-payback-guarantee",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "специалист",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-solar-payback-guarantee",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/23-solar.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-losses-internal",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "специалист",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "20-products/24-losses.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-losses-internal",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "20-products/24-losses.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-energy-60",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "REQUIRED_FACT_MISSING",
+      "severity": "P0",
+      "category": "retrieval",
+      "quote": "не напрямую",
+      "message": "Пропущен обязательный факт",
+      "sources": [
+        "10-energy/12-power-thresholds.md"
+      ],
+      "actual_sources": []
+    },
+    {
+      "case_id": "x-unsafe-tech",
+      "case_set": "release_holdout",
+      "mode": "batch",
+      "rule_id": "ESCALATION_MISSING",
+      "severity": "P0",
+      "category": "generation",
+      "quote": "answer",
+      "message": "Требуется специалист",
+      "sources": [
+        "00-reference/02-product-scope-and-limits.md"
+      ],
+      "actual_sources": []
+    }
+  ]
+}

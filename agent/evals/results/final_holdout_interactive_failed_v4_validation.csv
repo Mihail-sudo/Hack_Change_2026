@@ -1,0 +1,4 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,вероятност | оценка вероятности,Пропущен обязательный факт,20-products/24-losses.md,False
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,выездная проверка,Пропущен обязательный факт,20-products/24-losses.md,False
+fh-losses-deterministic,final_holdout,REQUIRED_FACT_MISSING,P0,не,Пропущен обязательный факт,20-products/24-losses.md,False

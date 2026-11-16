@@ -1,0 +1,31 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+7,demo,REQUIRED_FACT_MISSING,P1,одном интерфейсе | одном кабинете,Пропущен обязательный факт,20-products/22-askue.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,собираются показания | сбор данных | сбор показаний,Пропущен обязательный факт,20-products/22-askue.md,False
+h11,holdout,REQUIRED_FACT_MISSING,P1,остаются | сохраняется | не теряется,Пропущен обязательный факт,20-products/20-portfolio.md,False
+x-orem-20mw,release_holdout,REQUIRED_FACT_MISSING,P0,не гарантия | не гарантирует,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-office,release_holdout,REQUIRED_FACT_MISSING,P0,производственная нагрузка | производств,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,REQUIRED_FACT_MISSING,P0,аудит,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/21-orem.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,огранич,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,сначала,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,подбор | установка | после этого,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-no-meters,release_holdout,REQUIRED_FACT_MISSING,P0,затем подключение,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,общее собрание,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,не является типовым,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-14,release_holdout,REQUIRED_FACT_MISSING,P0,15–500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,зависит от объекта | индивидуальн,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-price-hybrid,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-losses-retail,release_holdout,REQUIRED_FACT_MISSING,P0,не является электросетевой | не относится,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-true,release_holdout,REQUIRED_FACT_MISSING,P0,допускается | можно,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-industry,release_holdout,REQUIRED_FACT_MISSING,P0,не поиск коммерческих потерь | не предлагается,Пропущен обязательный факт,20-products/24-losses.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,не хранятся,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,системе организации,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-retention,release_holdout,REQUIRED_FACT_MISSING,P0,проект | условия,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,1–2 недоступны | первая и вторая недоступны,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,небезопасно | несанкционировано | нельзя | опасно,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,вмешательству,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,специалист | оператор,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,00-reference/02-product-scope-and-limits.md,False

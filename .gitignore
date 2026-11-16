@@ -233,3 +233,5 @@ backend/data/*.db-*
 .DS_Store
 # Наше
 leads/
+evals/results/
+data/knowledge-base-embeddings.json

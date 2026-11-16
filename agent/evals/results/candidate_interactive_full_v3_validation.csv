@@ -1,0 +1,65 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+6,demo,REQUIRED_FACT_MISSING,P1,счётчики | приборы,Пропущен обязательный факт,20-products/22-askue.md,False
+9,demo,REQUIRED_FACT_MISSING,P0,серийный номер,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+10,demo,REQUIRED_FACT_MISSING,P1,плату за мощность | плата за мощность,Пропущен обязательный факт,10-energy/14-tariffs.md,False
+12,demo,REQUIRED_FACT_MISSING,P0,аудит | провер,Пропущен обязательный факт,20-products/21-orem.md,False
+13,demo,REQUIRED_FACT_MISSING,P1,бесплат,Пропущен обязательный факт,20-products/26-general.md,False
+13,demo,REQUIRED_FACT_MISSING,P1,не обязывает | ни к чему,Пропущен обязательный факт,20-products/26-general.md,False
+15,demo,PRODUCT_MISMATCH,P1,askue_cloud,"Набор рекомендованных продуктов не совпадает с ожидаемым: askue_cloud, meter_photo",20-products/22-askue.md | 20-products/25-meter-reading.md,False
+17,demo,REQUIRED_FACT_MISSING,P1,плата за мощность,Пропущен обязательный факт,10-energy/11-price-categories.md | 10-energy/14-tariffs.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,собираются показания | сбор данных | сбор показаний,Пропущен обязательный факт,20-products/22-askue.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,не,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,20 МВт,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,посредник,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,нельзя | не суммируются,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,электрической связности,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,"0,4 кВ",Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,750 кВт,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h06,holdout,REQUIRED_FACT_MISSING,P0,собственное потребление,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+h08,holdout,REQUIRED_FACT_MISSING,P1,юридически возможно,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,нет сетевых | без сетевых | если нет | в общем случае,Пропущен обязательный факт,20-products/24-losses.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,допускается | можно | может,Пропущен обязательный факт,20-products/24-losses.md,False
+h11,holdout,REQUIRED_FACT_MISSING,P1,не требуется | не придётся | не требует,Пропущен обязательный факт,20-products/20-portfolio.md,False
+h11,holdout,REQUIRED_FACT_MISSING,P1,остаются | сохраняется | не теряется,Пропущен обязательный факт,20-products/20-portfolio.md,False
+x-orem-749,release_holdout,REQUIRED_FACT_MISSING,P0,невозмож | не доступен,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-20mw,release_holdout,REQUIRED_FACT_MISSING,P0,не гарантия | не гарантирует,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-20mw,release_holdout,PRODUCT_MISMATCH,P0,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: orem,10-energy/12-power-thresholds.md,False
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-isolated,release_holdout,REQUIRED_FACT_MISSING,P0,Камчатк,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-disconnected,release_holdout,REQUIRED_FACT_MISSING,P0,750 кВт,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-connected,release_holdout,REQUIRED_FACT_MISSING,P1,связности,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-connected,release_holdout,REQUIRED_FACT_MISSING,P1,посредник | энергосбытовая компания,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-saving,release_holdout,REQUIRED_FACT_MISSING,P0,не гарантируем,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,REQUIRED_FACT_MISSING,P0,5–15% | анализ,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,REQUIRED_FACT_MISSING,P0,аудит,Пропущен обязательный факт,20-products/21-orem.md,False
+x-orem-saving,release_holdout,ESCALATION_MISSING,P0,clarify,Требуется специалист,20-products/21-orem.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,огранич,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-askue-price,release_dev,REQUIRED_FACT_MISSING,P1,под проект,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-price,release_dev,REQUIRED_FACT_MISSING,P1,объёмные,Пропущен обязательный факт,20-products/22-askue.md,False
+x-solar-hybrid,release_holdout,REQUIRED_FACT_MISSING,P0,расчёт,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-private,release_holdout,REQUIRED_FACT_MISSING,P0,не предлагается | не устанавливает | вне компетенции,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,общее собрание,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-apartment,release_holdout,REQUIRED_FACT_MISSING,P1,не является типовым,Пропущен обязательный факт,10-energy/15-microgeneration.md,False
+x-solar-14,release_holdout,REQUIRED_FACT_MISSING,P0,15–500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,зависит от объекта | индивидуальн,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-payback-single,release_holdout,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: solar,20-products/23-solar.md,False
+x-losses-grid,release_holdout,ACTION_MISMATCH,P0,show_form,Ожидалось действие answer|clarify,20-products/24-losses.md,False
+x-losses-retail,release_holdout,REQUIRED_FACT_MISSING,P0,не является электросетевой | не относится,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-true,release_holdout,REQUIRED_FACT_MISSING,P0,допускается | можно,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-false,release_holdout,REQUIRED_FACT_MISSING,P0,без сетевых,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-false,release_holdout,REQUIRED_FACT_MISSING,P0,не предлагается,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-sales-null,release_holdout,REQUIRED_FACT_MISSING,P0,рекомендация не даётся | уточнить,Пропущен обязательный факт,20-products/24-losses.md,False
+x-losses-industry,release_holdout,REQUIRED_FACT_MISSING,P0,не поиск коммерческих потерь | не предлагается,Пропущен обязательный факт,20-products/24-losses.md,False
+x-photo-heat,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/25-meter-reading.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,не хранятся,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,не обрабатываются,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,системе организации,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных,Пропущен обязательный факт,10-energy/17-faq.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,вмешательству,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,специалист | оператор,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,ESCALATION_MISSING,P0,out_of_scope,Требуется специалист,00-reference/02-product-scope-and-limits.md,False
+dialog-known-power,release_dev,PRODUCT_MISMATCH,P1,∅,Набор рекомендованных продуктов не совпадает с ожидаемым: orem,docs/contract.md,False
+dialog-one-question,release_dev,SLOT_MISMATCH,P1,segment='other',Ожидалось segment='industry',docs/contract.md,False
+h-dialog-null,release_holdout,CLARIFICATION_MISSING,P0,has_grid_assets,Не задан обязательный уточняющий вопрос,docs/contract.md,False

@@ -1,0 +1,2 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+fh-solar-microgen-limit,final_holdout,REQUIRED_FACT_MISSING,P0,150 кВт,Пропущен обязательный факт,10-energy/15-microgeneration.md,False

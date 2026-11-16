@@ -1,0 +1,380 @@
+[
+  {
+    "id": "1",
+    "question": "У нас крыша на два ската — восток и запад. Панели можно поставить на оба?",
+    "expected_sources": [
+      "20-products/23-solar.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/23-solar.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "10-energy/11-price-categories.md",
+      "00-reference/00-product-map.md",
+      "10-energy/14-tariffs.md",
+      "20-products/22-askue.md",
+      "20-products/21-orem.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "2",
+    "question": "На крыше почти нет места. А солнечные панели на фасад ставите?",
+    "expected_sources": [
+      "20-products/23-solar.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/23-solar.md",
+      "00-reference/03-calculation-and-requests.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "20-products/20-portfolio.md",
+      "10-energy/10-market.md",
+      "20-products/26-general.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "3",
+    "question": "Можно сначала поставить солнечную станцию на 60 кВт, а потом расширить?",
+    "expected_sources": [
+      "20-products/23-solar.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "00-reference/03-calculation-and-requests.md",
+      "20-products/26-general.md",
+      "20-products/23-solar.md",
+      "10-energy/12-power-thresholds.md",
+      "20-products/22-askue.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "4",
+    "question": "У нас старая шиферная крыша. Стоит вообще рассматривать солнечные панели?",
+    "expected_sources": [
+      "20-products/23-solar.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/23-solar.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "00-reference/03-calculation-and-requests.md",
+      "20-products/26-general.md",
+      "20-products/20-portfolio.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 3,
+    "category": "ok"
+  },
+  {
+    "id": "5",
+    "question": "В счётчиках стоят симки другого оператора. Для вашей платформы их надо менять?",
+    "expected_sources": [
+      "20-products/22-askue.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/22-askue.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "10-energy/17-faq.md",
+      "10-energy/11-price-categories.md",
+      "20-products/25-meter-reading.md",
+      "20-products/21-orem.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "6",
+    "question": "Хочу видеть расход электричества отдельно по цехам. В вашем кабинете так можно?",
+    "expected_sources": [
+      "20-products/22-askue.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/22-askue.md",
+      "20-products/20-portfolio.md",
+      "10-energy/14-tariffs.md",
+      "20-products/21-orem.md",
+      "20-products/24-losses.md",
+      "10-energy/10-market.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "7",
+    "question": "У нас несколько магазинов. Можно смотреть их расход в одном кабинете?",
+    "expected_sources": [
+      "20-products/22-askue.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/22-askue.md",
+      "20-products/20-portfolio.md",
+      "10-energy/14-tariffs.md",
+      "20-products/24-losses.md",
+      "20-products/26-general.md",
+      "10-energy/11-price-categories.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "8",
+    "question": "У нас двухтарифные счётчики. По фото сервис оба показания разберёт?",
+    "expected_sources": [
+      "20-products/25-meter-reading.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/25-meter-reading.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "20-products/20-portfolio.md",
+      "10-energy/13-metering.md",
+      "20-products/26-general.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "9",
+    "question": "Сервис по фотографии сможет прочитать год выпуска счётчика?",
+    "expected_sources": [
+      "20-products/25-meter-reading.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/25-meter-reading.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "20-products/26-general.md",
+      "10-energy/17-faq.md",
+      "20-products/22-askue.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "10",
+    "question": "Мы стали больше работать вечером, и счёт вырос. Можно разобраться, из-за чего?",
+    "expected_sources": [
+      "10-energy/14-tariffs.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "10-energy/14-tariffs.md",
+      "10-energy/10-market.md",
+      "10-energy/11-price-categories.md",
+      "20-products/26-general.md",
+      "20-products/24-losses.md",
+      "20-products/23-solar.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "11",
+    "question": "Нам предлагают компенсировать реактивную энергию. Сначала надо что-то измерить?",
+    "expected_sources": [
+      "10-energy/17-faq.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "10-energy/17-faq.md",
+      "20-products/23-solar.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "10-energy/12-power-thresholds.md",
+      "10-energy/15-microgeneration.md",
+      "20-products/26-general.md",
+      "20-products/22-askue.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "12",
+    "question": "Хотим разобраться, подходит ли нам оптовый рынок. Вы сначала проверите наш учёт?",
+    "expected_sources": [
+      "20-products/21-orem.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/20-portfolio.md",
+      "20-products/21-orem.md",
+      "00-reference/03-calculation-and-requests.md",
+      "00-reference/01-numbers-and-indicators.md",
+      "10-energy/10-market.md",
+      "20-products/26-general.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "13",
+    "question": "Если расчёт покажет, что проект нам невыгоден, вы так и скажете?",
+    "expected_sources": [
+      "20-products/26-general.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/26-general.md",
+      "20-products/21-orem.md",
+      "10-energy/15-microgeneration.md",
+      "00-reference/03-calculation-and-requests.md",
+      "20-products/22-askue.md",
+      "10-energy/14-tariffs.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 5,
+    "category": "ok"
+  },
+  {
+    "id": "14",
+    "question": "Пользователь: У нас небольшое производство, хотим поставить солнечную станцию.\nАссистент: Какая у вас основная цель: сократить расходы или иметь резерв при отключениях?\nПользователь: И то и другое. Но больше всего электричества тратим вечером.\nАссистент: Тогда важно учесть время потребления и отдельно рассмотреть накопители.\nПользователь: А обычная сетевая станция с вечерней нагрузкой вообще имеет смысл?",
+    "expected_sources": [
+      "20-products/23-solar.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/23-solar.md",
+      "00-reference/03-calculation-and-requests.md",
+      "20-products/22-askue.md",
+      "10-energy/15-microgeneration.md",
+      "10-energy/11-price-categories.md",
+      "20-products/20-portfolio.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 3,
+    "category": "ok"
+  },
+  {
+    "id": "15",
+    "question": "Пользователь: Хотим подключить к вашей платформе приборы в бизнес-центре.\nАссистент: Какая задача: общий учёт или расходы отдельно по арендаторам?\nПользователь: По арендаторам. У большинства счётчики уже стоят.\nАссистент: Понял. Каким способом сейчас собираете показания?\nПользователь: Кто-то присылает фото, а по некоторым ходит техник. С чего нам начать?",
+    "expected_sources": [
+      "20-products/22-askue.md",
+      "20-products/25-meter-reading.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "10-energy/17-faq.md",
+      "20-products/22-askue.md",
+      "20-products/26-general.md",
+      "20-products/20-portfolio.md",
+      "20-products/25-meter-reading.md",
+      "00-reference/03-calculation-and-requests.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "16",
+    "question": "Пользователь: Мы электросетевая компания. Хотим лучше находить потери.\nАссистент: Для этого есть сервис, который помогает определить точки для выездной проверки. Какие данные учёта у вас есть?\nПользователь: По одним приборам почасовые, по другим только суточные.\nАссистент: Понял. Какой архив накоплен?\nПользователь: Примерно за два года. Таких данных хватит, чтобы начать?",
+    "expected_sources": [
+      "20-products/24-losses.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/24-losses.md",
+      "20-products/20-portfolio.md",
+      "20-products/26-general.md",
+      "20-products/25-meter-reading.md",
+      "20-products/22-askue.md",
+      "00-reference/03-calculation-and-requests.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  },
+  {
+    "id": "17",
+    "question": "Пользователь: У нас завод, расходы на свет сильно выросли.\nАссистент: Для начала нужно разделить рост потребления и изменение цены. Вы сравнивали счета за одинаковые периоды?\nПользователь: Потребление выросло чуть-чуть, а сумма заметно.\nАссистент: А какая у вас ценовая категория?\nПользователь: Кажется, четвёртая. Что вообще стоит проверить в счёте?",
+    "expected_sources": [
+      "10-energy/11-price-categories.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "10-energy/14-tariffs.md",
+      "10-energy/11-price-categories.md",
+      "10-energy/12-power-thresholds.md",
+      "10-energy/10-market.md",
+      "20-products/24-losses.md",
+      "10-energy/13-metering.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 3,
+    "category": "ok"
+  },
+  {
+    "id": "18",
+    "question": "Пользователь: Хотим понять, сколько будет стоить автоматический учёт на наших объектах.\nАссистент: Стоимость зависит от количества приборов и конфигурации. Сколько объектов у вас?\nПользователь: Три склада, всего около сорока счётчиков.\nАссистент: Можно подготовить предварительную оценку по данным объектов.\nПользователь: Я пока не готов оставлять телефон. Можете объяснить, что понадобится для оценки?",
+    "expected_sources": [
+      "20-products/22-askue.md"
+    ],
+    "retrieved_sources": [
+      "00-reference/02-product-scope-and-limits.md",
+      "20-products/26-general.md",
+      "20-products/22-askue.md",
+      "20-products/23-solar.md",
+      "10-energy/17-faq.md",
+      "20-products/21-orem.md",
+      "10-energy/13-metering.md"
+    ],
+    "missing_sources": [],
+    "missing_keywords": [],
+    "retrieval_ok": true,
+    "judge_score": 4,
+    "category": "ok"
+  }
+]

@@ -1,0 +1,6 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+5,demo,REQUIRED_FACT_MISSING,P1,не обязательно | не надо менять | не нужно менять,Пропущен обязательный факт,20-products/22-askue.md,False
+5,demo,REQUIRED_FACT_MISSING,P1,других операторов,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-pd,release_holdout,REQUIRED_FACT_MISSING,P0,договор,Пропущен обязательный факт,20-products/26-general.md,False
+x-solar-501,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-photo-private,release_holdout,REQUIRED_FACT_MISSING,P0,частному абоненту,Пропущен обязательный факт,20-products/25-meter-reading.md,False

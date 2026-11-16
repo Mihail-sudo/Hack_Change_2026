@@ -1,0 +1,15 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+17,demo,REQUIRED_FACT_MISSING,P1,средняя цена | среднюю цену,Пропущен обязательный факт,10-energy/11-price-categories.md | 10-energy/14-tariffs.md,False
+17,demo,REQUIRED_FACT_MISSING,P1,плата за мощность | плата | плате,Пропущен обязательный факт,10-energy/11-price-categories.md | 10-energy/14-tariffs.md,False
+h01,holdout,REQUIRED_FACT_MISSING,P0,посредник,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,нельзя | не суммируются,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,электрической связности | связан,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+h03,holdout,REQUIRED_FACT_MISSING,P0,"0,4 кВ",Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,кВт·ч,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция | нет подтверждённой информации | не ведёт учёт воды | не указано | для воды есть отдельное решение,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-solar-14,release_holdout,REQUIRED_FACT_MISSING,P0,15–500 | 15 до 500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-15,release_holdout,REQUIRED_FACT_MISSING,P1,зависит от объекта | индивидуальн | конкретного объекта | под ваш объект,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-sales-null,release_holdout,REQUIRED_FACT_MISSING,P0,рекомендация не даётся | уточнить | неизвестно | если только нет | подскажите,Пропущен обязательный факт,20-products/24-losses.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,не обрабатываются | не обрабатываем,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-energy-reactive,release_dev,REQUIRED_FACT_MISSING,P1,без этих данных,Пропущен обязательный факт,10-energy/17-faq.md,False

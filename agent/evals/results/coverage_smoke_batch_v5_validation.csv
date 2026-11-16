@@ -1,0 +1,18 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+15,demo,REQUIRED_FACT_MISSING,P1,по фотографии | по фото,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+18,demo,REQUIRED_FACT_MISSING,P1,собираются показания | сбор данных,Пропущен обязательный факт,20-products/22-askue.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,нет сетевых | без сетевых | если нет,Пропущен обязательный факт,20-products/24-losses.md,False
+h10,holdout,REQUIRED_FACT_MISSING,P0,допускается | можно,Пропущен обязательный факт,20-products/24-losses.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,по фотографии | не ведёт | не входит,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,B2B,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,верификации,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-photo-uk,release_holdout,REQUIRED_FACT_MISSING,P0,не основание,Пропущен обязательный факт,20-products/25-meter-reading.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,3–6 | с третьей по шестую,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,1–2 недоступны | первая и вторая недоступны,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-energy-670,release_holdout,REQUIRED_FACT_MISSING,P0,обязателен | требуется,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-solar-payback-guarantee,release_holdout,REQUIRED_FACT_MISSING,P0,специалист,Пропущен обязательный факт,20-products/23-solar.md,False
+x-solar-payback-guarantee,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,20-products/23-solar.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,небезопасно | несанкционировано | нельзя,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,REQUIRED_FACT_MISSING,P0,специалист,Пропущен обязательный факт,00-reference/02-product-scope-and-limits.md,False
+x-unsafe-tech,release_holdout,ESCALATION_MISSING,P0,answer,Требуется специалист,00-reference/02-product-scope-and-limits.md,False

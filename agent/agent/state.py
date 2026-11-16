@@ -1,20 +1,32 @@
 """Сериализуемое состояние диалога и безопасное слияние слотов."""
 
+from agent.domain import consent_message_is_valid, revoked_consent
+
 SLOT_TYPES = {
     "organization_type": str,
+    "segment": str,
+    "has_grid_assets": bool,
     "task": str,
     "power_kw": (int, float),
+    "power_unit_invalid": bool,
     "monthly_consumption_kwh": (int, float),
     "metering_setup": str,
     "price_category": str,
     "region": str,
+    "voltage_level": str,
+    "current_market_participation": bool,
     "site_details": str,
+    "solar_goal": str,
     "autonomy_required": bool,
     "resource_type": str,
     "full_name": str,
     "phone": str,
     "company": str,
     "consent_pd": bool,
+    "consent_evidence": str,
+    "consent_revoked": bool,
+    "contact_refused": bool,
+    "contact_refusal_evidence": str,
 }
 
 
@@ -66,5 +78,28 @@ def merge_slots(known: dict, extracted: dict) -> dict:
     return merged
 
 
-def contacts_complete(slots: dict) -> bool:
-    return all(slots.get(name) for name in ("full_name", "phone", "company")) and slots.get("consent_pd") is True
+def consent_is_proven(slots: dict, history: list[dict]) -> bool:
+    if slots.get("consent_pd") is not True or slots.get("consent_revoked") is True:
+        return False
+    evidence = slots.get("consent_evidence")
+    if not evidence or not consent_message_is_valid(evidence):
+        return False
+    evidence_index = None
+    for index, item in enumerate(history):
+        if item.get("role") == "user" and item.get("content", "").strip() == evidence.strip():
+            if consent_message_is_valid(item.get("content", "")):
+                evidence_index = index
+    if evidence_index is None:
+        return False
+    return not any(
+        item.get("role") == "user" and revoked_consent(item.get("content", ""))
+        for item in history[evidence_index + 1:]
+    )
+
+
+def contacts_complete(slots: dict, history: list[dict] | None = None) -> bool:
+    if not all(slots.get(name) for name in ("full_name", "phone", "company")):
+        return False
+    if slots.get("contact_refused") is True:
+        return False
+    return history is not None and consent_is_proven(slots, history)

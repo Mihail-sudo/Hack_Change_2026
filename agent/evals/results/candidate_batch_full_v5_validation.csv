@@ -1,0 +1,7 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+x-orem-kwh,release_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+x-askue-debt,release_holdout,REQUIRED_FACT_MISSING,P0,не обещает взыскание,Пропущен обязательный факт,20-products/22-askue.md,False
+x-askue-water,release_holdout,REQUIRED_FACT_MISSING,P0,не готовая функция | нет подтверждённой информации | не ведёт учёт воды,Пропущен обязательный факт,20-products/22-askue.md | 20-products/25-meter-reading.md,False
+x-solar-14,release_holdout,REQUIRED_FACT_MISSING,P0,15–500 | 15 до 500,Пропущен обязательный факт,20-products/23-solar.md,False
+x-losses-sales-null,release_holdout,REQUIRED_FACT_MISSING,P0,рекомендация не даётся | уточнить | неизвестно | если только нет,Пропущен обязательный факт,20-products/24-losses.md,False
+x-photo-pd,release_holdout,REQUIRED_FACT_MISSING,P1,системе организации | системе клиента | внутренней системе,Пропущен обязательный факт,20-products/25-meter-reading.md,False

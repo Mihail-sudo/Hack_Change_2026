@@ -1,0 +1,6 @@
+case_id,case_set,rule_id,severity,quote,message,sources,runtime
+fh-orem-power-unknown,final_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность | важна присоединённая мощность | нет данных | не указана присоединённая мощность | необходимо знать,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+fh-askue-collection,final_holdout,REQUIRED_FACT_MISSING,P0,огранич | не взыскание | нет подтверждённой информации | не занимается взысканием | не занимается взысканием | не занимается взысканием,Пропущен обязательный факт,20-products/22-askue.md,False
+fh-pd-platform-general,final_holdout,REQUIRED_FACT_MISSING,P0,договор,Пропущен обязательный факт,20-products/26-general.md,False
+fh-energy-power-units,final_holdout,REQUIRED_FACT_MISSING,P0,нельзя определить | невозможно определить | недостаточно данных | требуется знать | нужна присоединённая мощность | важна присоединённая мощность | нет данных | не указана присоединённая мощность,Пропущен обязательный факт,10-energy/12-power-thresholds.md,False
+fh-escalation-required,final_holdout,REQUIRED_FACT_MISSING,P0,договор,Пропущен обязательный факт,20-products/26-general.md,False
