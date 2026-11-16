@@ -1,0 +1,134 @@
+.bubble {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 85%;
+  min-width: 0;
+}
+
+/* Mobile: slightly wider bubbles, larger tap-friendly avatar spacing */
+@media (max-width: 767.98px) {
+  .bubble {
+    max-width: 92%;
+    gap: var(--space-2);
+  }
+
+  .body {
+    font-size: var(--text-base);
+  }
+}
+
+.bubbleUser {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.bubbleAssistant {
+  align-self: flex-start;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.avatarAssistant {
+  background: var(--color-primary);
+  color: white;
+}
+
+.avatarUser {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.body {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-normal);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.bodyAssistant {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-top-left-radius: var(--radius-sm);
+  color: var(--color-text);
+}
+
+.bodyUser {
+  background: var(--color-accent);
+  border-top-right-radius: var(--radius-sm);
+  color: white;
+}
+
+.meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  padding: 0 var(--space-1);
+}
+
+.bubbleUser .meta {
+  text-align: right;
+}
+
+/* Failed user message */
+.bubbleError .bodyError {
+  border-color: var(--color-error);
+}
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: 0 var(--space-1);
+}
+
+.errorText {
+  font-size: var(--text-xs);
+  color: var(--color-error);
+}
+
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  min-height: 32px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.retryBtn:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg-elevated);
+}
+
+.retryBtn:active {
+  background: var(--color-bg-secondary);
+}
