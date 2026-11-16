@@ -101,7 +101,10 @@ def call_llm(messages: list[dict], **params) -> str:
     """Отправить сообщения модели и вернуть текст ответа."""
     base_url, key, model = _settings()
     payload = {"model": model, "messages": messages}
-    if not _environment("LLM_BASE_URL", "BASE_URL", "OPENAI_BASE_URL"):
+    reasoning = _environment("LLM_REASONING").lower()
+    if reasoning:
+        payload["reasoning"] = {"enabled": reasoning in {"1", "true", "yes", "on", "enabled"}}
+    elif "polza.ai" in base_url:
         payload["reasoning"] = {"enabled": False}
     if _environment("TEMPERATURE") and "temperature" not in params:
         payload["temperature"] = float(_environment("TEMPERATURE"))
