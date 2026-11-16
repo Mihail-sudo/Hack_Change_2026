@@ -8,6 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ApiClientError } from "@/shared/api/apiClient";
 import { API_BASE_URL } from "@/shared/api/config";
 import { createLiveChatApi } from "./liveChatApi";
+import { createLocalSessionRegistry } from "./localSessions";
 import type { ChatResponseDto, MessagesReadDto } from "./dto";
 
 const SESSION_ID = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d";
@@ -230,11 +231,13 @@ describe("liveChatApi.getSession", () => {
 });
 
 describe("liveChatApi.listSessions", () => {
+  // In-memory реестры: тесты изоляции не должны зависеть от localStorage
+  // (персистентный реестр по умолчанию шарит данные через energytool.sessions.v1).
   it("возвращает сессии локального реестра БЕЗ вызова GET /admin/dialogs (небезопасен без авторизации)", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, {}));
     vi.stubGlobal("fetch", fetchMock);
 
-    const api = createLiveChatApi();
+    const api = createLiveChatApi(createLocalSessionRegistry());
     await api.createSession();
     const sessions = await api.listSessions();
 
@@ -251,7 +254,7 @@ describe("liveChatApi.listSessions", () => {
       vi.fn().mockResolvedValue(jsonResponse(200, chatResponse))
     );
 
-    const api = createLiveChatApi();
+    const api = createLiveChatApi(createLocalSessionRegistry());
     const session = await api.createSession();
     await api.sendMessage({ sessionId: session.id, content: "Счета за электричество выросли" });
 
@@ -260,8 +263,8 @@ describe("liveChatApi.listSessions", () => {
   });
 
   it("создаёт отдельные реестры для разных экземпляров api", async () => {
-    const apiA = createLiveChatApi();
-    const apiB = createLiveChatApi();
+    const apiA = createLiveChatApi(createLocalSessionRegistry());
+    const apiB = createLiveChatApi(createLocalSessionRegistry());
     await apiA.createSession();
 
     expect(await apiA.listSessions()).toHaveLength(1);

@@ -2,7 +2,7 @@
  * Публичная конфигурация API. Единственное место, где читается адрес backend —
  * localhost нигде больше в коде не хардкодится.
  *
- * VITE_API_BASE_URL — публичная переменная (без секретов): она попадает в браузер.
+ * VITE_* переменные попадают в браузер: секреты здесь хранить нельзя.
  */
 
 const DEFAULT_API_BASE_URL = "http://localhost:8000";
@@ -18,3 +18,14 @@ export const API_BASE_URL: string = (
  */
 export const CHAT_API_MODE: "mock" | "live" =
   import.meta.env.VITE_CHAT_API === "live" ? "live" : "mock";
+
+/**
+ * Управляет видимостью DebugPanel.
+ * - По умолчанию (переменная не установлена): панель включена
+ * - "true": панель доступна
+ * - "false": панель и кнопка скрыты полностью
+ *
+ * Управляется переменной VITE_DEBUG_PANEL_ENABLED (см. .env.example).
+ */
+export const DEBUG_PANEL_ENABLED: boolean =
+  import.meta.env.VITE_DEBUG_PANEL_ENABLED !== "false";

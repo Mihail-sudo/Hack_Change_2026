@@ -11,6 +11,7 @@ import type {
 import { toAssistantMessage, toSessionFromMessages, toDomainMessage } from "./mapping";
 import {
   createLocalSessionRegistry,
+  createPersistentRegistry,
   toSessionFromMeta,
   type LocalSessionRegistry,
 } from "./localSessions";
@@ -41,7 +42,9 @@ import {
 const CHAT_TIMEOUT_MS = 60_000; // реальный LLM-агент может отвечать дольше дефолтных 30 с
 const LIST_TIMEOUT_MS = 15_000;
 
-export function createLiveChatApi(registry: LocalSessionRegistry = createLocalSessionRegistry()) {
+export function createLiveChatApi(
+  registry: LocalSessionRegistry = createPersistentRegistry(createLocalSessionRegistry())
+) {
   return {
     mode: "live" as const,
 

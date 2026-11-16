@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, Menu, Wrench, Users, Headphones } from "lucide-react";
+import { PanelLeft, PanelRight, Users, Headphones } from "lucide-react";
 import { chatApi } from "@/shared/api";
 import {
   MessageList,
@@ -8,24 +8,32 @@ import {
   LeadDialog,
   useChatMessaging,
   useEnsureActiveSession,
-  useCreateSession,
 } from "@/features/chat";
 import styles from "./ChatWorkspace.module.css";
 
 interface ChatWorkspaceProps {
+  /** Callback to toggle left sidebar (history panel) */
   onOpenHistory?: () => void;
+  /** Callback to toggle right sidebar (debug panel) */
   onOpenDebug?: () => void;
+  /** Whether the left sidebar is currently visible */
+  isLeftSidebarVisible?: boolean;
+  /** Whether the right sidebar is currently visible */
+  isRightSidebarVisible?: boolean;
 }
 
 type HandoffState = "idle" | "pending" | "done" | "error";
 
-export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps) {
+export function ChatWorkspace({
+  onOpenHistory,
+  onOpenDebug,
+  isLeftSidebarVisible = true,
+  isRightSidebarVisible = true,
+}: ChatWorkspaceProps) {
   const { sessionId } = useEnsureActiveSession();
   const { messages, hasPending, quickReplies, dialogMode, error, send, refetchHistory } =
     useChatMessaging(sessionId);
-  const createSession = useCreateSession();
   const messagesAreaRef = useRef<HTMLDivElement>(null);
-  const [loadError, setLoadError] = useState(false);
   const [isLeadDialogOpen, setIsLeadDialogOpen] = useState(false);
   const [handoffState, setHandoffState] = useState<HandoffState>("idle");
 
@@ -40,14 +48,6 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
     // jsdom не реализует scrollTo — используем прямое присваивание scrollTop
     area.scrollTop = area.scrollHeight;
   }, [messages.length, hasPending, prefersReducedMotion]);
-
-  const handleNewDialog = () => {
-    setLoadError(false);
-    setHandoffState("idle");
-    createSession.mutate(undefined, {
-      onError: () => setLoadError(true),
-    });
-  };
 
   // POST /chat/handoff: постановка диалога в очередь живого оператора.
   const handleRequestOperator = async () => {
@@ -67,13 +67,15 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
   return (
     <div className={styles.chatWorkspace}>
       <header className={styles.header}>
+        {/* Toggle left sidebar (история) */}
         {onOpenHistory && (
           <button
             className={styles.navButton}
             onClick={onOpenHistory}
-            aria-label="Открыть историю диалогов"
+            aria-label={isLeftSidebarVisible ? "Скрыть историю диалогов" : "Показать историю диалогов"}
+            aria-pressed={isLeftSidebarVisible}
           >
-            <Menu size={20} aria-hidden="true" />
+            <PanelLeft size={20} aria-hidden="true" />
           </button>
         )}
 
@@ -115,15 +117,6 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
           </button>
           <button
             className={styles.headerAction}
-            onClick={handleNewDialog}
-            disabled={createSession.isPending}
-            aria-label="Начать новый диалог"
-          >
-            <Plus size={16} aria-hidden="true" />
-            <span>Новый диалог</span>
-          </button>
-          <button
-            className={styles.headerAction}
             onClick={() => setIsLeadDialogOpen(true)}
             disabled={!sessionId || hasPending}
             aria-label="Связаться с менеджером"
@@ -131,24 +124,22 @@ export function ChatWorkspace({ onOpenHistory, onOpenDebug }: ChatWorkspaceProps
             <Users size={16} aria-hidden="true" />
             <span>Связаться с менеджером</span>
           </button>
+          {/* Toggle right sidebar (debug panel) */}
           {onOpenDebug && (
             <button
               className={styles.navButton}
               onClick={onOpenDebug}
-              aria-label="Открыть режим отладки"
+              aria-label={isRightSidebarVisible ? "Скрыть режим отладки" : "Показать режим отладки"}
+              aria-pressed={isRightSidebarVisible}
             >
-              <Wrench size={20} aria-hidden="true" />
+              <PanelRight size={20} aria-hidden="true" />
             </button>
           )}
         </div>
       </header>
 
       <div className={styles.messagesArea} ref={messagesAreaRef}>
-        {loadError ? (
-          <div className={styles.loadStatus} role="alert">
-            Не удалось начать новый диалог. Попробуйте ещё раз.
-          </div>
-        ) : error ? (
+        {error ? (
           <div className={styles.loadStatus} role="alert">
             Не удалось загрузить историю диалога.{" "}
             <button type="button" className={styles.retryBtn} onClick={refetchHistory}>

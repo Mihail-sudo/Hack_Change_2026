@@ -12,9 +12,9 @@
   margin-bottom: var(--space-3);
 }
 
-/* Close button — visible only when the panel is a drawer (< 1280px) */
+/* Close button — visible only when the panel is a drawer (< 1280px) or toggle mode */
 .closeButton {
-  display: none;
+  display: flex;
   width: 40px;
   height: 40px;
   align-items: center;
@@ -34,12 +34,6 @@
   border-color: var(--color-text-muted);
 }
 
-@media (max-width: 1279.98px) {
-  .closeButton {
-    display: flex;
-  }
-}
-
 .logoIcon {
   width: 32px;
   height: 32px;
@@ -48,6 +42,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .logoIcon svg {
@@ -183,19 +178,9 @@
   margin-top: auto;
 }
 
-/* Mobile: larger touch targets */
-@media (max-width: 767.98px) {
-  .newDialogBtn {
-    min-height: 48px;
-  }
-
-  .sessionItem {
-    padding: var(--space-4) var(--space-3);
-  }
-
-  .footerItem {
-    min-height: 44px;
-  }
+.footerSection {
+  display: flex;
+  flex-direction: column;
 }
 
 .footerItem {
@@ -210,6 +195,10 @@
   transition:
     background var(--transition-fast),
     color var(--transition-fast);
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
 }
 
 .footerItem:hover {
@@ -217,7 +206,84 @@
   color: var(--color-text);
 }
 
+.footerItemActive {
+  color: var(--color-text);
+}
+
 .footerItem svg {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform var(--transition-fast);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.activityContainer {
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+}
+
+.activityDescription {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  line-height: var(--line-height-normal);
+}
+
+.activityGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.activityMetric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.activityValue {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  font-family: var(--font-mono);
+}
+
+.activityLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Mobile: larger touch targets */
+@media (max-width: 767.98px) {
+  .newDialogBtn {
+    min-height: 48px;
+  }
+
+  .sessionItem {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .footerItem {
+    min-height: 44px;
+  }
+
+  .activityGrid {
+    grid-template-columns: 1fr 1fr;
+  }
 }

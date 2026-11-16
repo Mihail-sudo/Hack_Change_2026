@@ -161,11 +161,9 @@
   background: var(--color-bg-secondary);
 }
 
-/* Desktop: history & debug panels are always visible — toggle buttons are redundant */
-@media (min-width: 1280px) {
-  .navButton {
-    display: none;
-  }
+.navButton[aria-pressed="true"] {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-text-muted);
 }
 
 .messagesArea {

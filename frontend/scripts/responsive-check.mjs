@@ -19,10 +19,13 @@ const SEL = {
   historyPanel: 'aside[aria-label="История диалогов"]',
   debugPanel: 'aside[aria-label="Режим отладки"]',
   center: "main",
-  openHistory: 'button[aria-label="Открыть историю диалогов"]',
-  openDebug: 'button[aria-label="Открыть режим отладки"]',
+  openHistory: 'button[aria-label="Показать историю диалогов"]',
+  openDebug: 'button[aria-label="Показать режим отладки"]',
   closeHistory: 'button[aria-label="Закрыть историю диалогов"]',
   closeDebug: 'button[aria-label="Закрыть режим отладки"]',
+  hideHistory: 'button[aria-label="Скрыть историю диалогов"]',
+  hideDebug: 'button[aria-label="Скрыть режим отладки"]',
+  resizeLeft: '[role="separator"][aria-label*="Изменить ширину панели"]',
   textarea: 'textarea[aria-label="Поле ввода сообщения"]',
   send: 'button[aria-label="Отправить сообщение"]',
   bubbles: "[class*='bubble']",
@@ -277,7 +280,7 @@ for (const vp of VIEWPORTS) {
       return { x: Math.round(r.x), ariaHidden: el.getAttribute("aria-hidden") };
     }, SEL.historyPanel);
     const focusBack = await page.evaluate(
-      () => document.activeElement?.getAttribute("aria-label") === "Открыть историю диалогов"
+      () => document.activeElement?.getAttribute("aria-label") === "Показать историю диалогов"
     );
     console.log(
       `drawer history closed: x=${histClosed.x} ariaHidden=${histClosed.ariaHidden}, focus restored=${focusBack}`
@@ -329,6 +332,109 @@ for (const vp of VIEWPORTS) {
       return { w: Math.round(r.width), h: Math.round(r.height) };
     }, SEL.textarea);
     console.log(`textarea on desktop: ${taRect.w}x${taRect.h}`);
+
+    // Desktop: independent sidebar toggles
+    const hideHistory = await page.locator(SEL.hideHistory).count();
+    const hideDebug = await page.locator(SEL.hideDebug).count();
+    if (!hideHistory) problems.push("Desktop: left sidebar toggle button missing");
+    if (!hideDebug) problems.push("Desktop: right sidebar toggle button missing");
+
+    if (hideHistory) {
+      await page.click(SEL.hideHistory);
+      await page.waitForTimeout(250);
+      const histGone = await page.evaluate((s) => !document.querySelector(s), SEL.historyPanel);
+      if (!histGone) problems.push("Desktop: left panel not removed after toggle");
+      // Right panel must remain (independence)
+      const dbgStill = await page.evaluate((s) => !!document.querySelector(s), SEL.debugPanel);
+      if (!dbgStill) problems.push("Desktop: right panel disappeared with left toggle (not independent)");
+      await page.click(SEL.openHistory);
+      await page.waitForTimeout(250);
+      const histBack = await page.evaluate((s) => !!document.querySelector(s), SEL.historyPanel);
+      if (!histBack) problems.push("Desktop: left panel not restored after toggle");
+    }
+
+    if (hideDebug) {
+      await page.click(SEL.hideDebug);
+      await page.waitForTimeout(250);
+      const dbgGone = await page.evaluate((s) => !document.querySelector(s), SEL.debugPanel);
+      if (!dbgGone) problems.push("Desktop: right panel not removed after toggle");
+      await page.click(SEL.openDebug);
+      await page.waitForTimeout(250);
+      const dbgBack = await page.evaluate((s) => !!document.querySelector(s), SEL.debugPanel);
+      if (!dbgBack) problems.push("Desktop: right panel not restored after toggle");
+    }
+
+    // Desktop: resize handles (role=separator, col-resize cursor, keyboard)
+    const handles = await page.evaluate((s) => document.querySelectorAll(s).length, SEL.resizeLeft);
+    console.log(`resize handles: ${handles}`);
+    if (handles < 2) problems.push(`Desktop: expected 2 resize handles, found ${handles}`);
+
+    // Drag left panel's handle: width must change and persist
+    const beforeWidth = await page.evaluate(
+      (s) => document.querySelector(s)?.getBoundingClientRect().width ?? 0,
+      SEL.historyPanel
+    );
+    const handleBox = await page.evaluate((s) => {
+      const el = document.querySelector(s);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    }, `${SEL.resizeLeft}:not([hidden])`);
+    if (handleBox) {
+      await page.mouse.move(handleBox.x, handleBox.y);
+      await page.mouse.down();
+      await page.mouse.move(handleBox.x + 60, handleBox.y, { steps: 5 });
+      await page.mouse.up();
+      await page.waitForTimeout(100);
+
+      const afterWidth = await page.evaluate(
+        (s) => document.querySelector(s)?.getBoundingClientRect().width ?? 0,
+        SEL.historyPanel
+      );
+      console.log(`history width after drag: ${Math.round(beforeWidth)} -> ${Math.round(afterWidth)}`);
+      if (Math.abs(afterWidth - beforeWidth) < 40)
+        problems.push(`Desktop: dragging left handle did not resize (${beforeWidth} -> ${afterWidth})`);
+
+      // Width persisted
+      const stored = await page.evaluate(() =>
+        JSON.parse(localStorage.getItem("energytool.ui.v1") ?? "{}")
+      );
+      if (Math.abs((stored.leftSidebarWidth ?? 0) - afterWidth) > 2)
+        problems.push(`Desktop: leftSidebarWidth not persisted (${stored.leftSidebarWidth} vs ${Math.round(afterWidth)})`);
+
+      // Min clamp
+      const clampOk = await page.evaluate(() => {
+        const prefs = JSON.parse(localStorage.getItem("energytool.ui.v1") ?? "{}");
+        return prefs.leftSidebarWidth >= 220 && prefs.leftSidebarWidth <= 480;
+      });
+      if (!clampOk) problems.push("Desktop: resized width outside [220, 480] limits");
+    }
+
+    // Keyboard resize on handle (панель анимируется transition'ом — ждём завершения)
+    const kbResize = await page.evaluate(
+      (s) =>
+        new Promise((resolve) => {
+          const handle = document.querySelector(s);
+          if (!handle) {
+            resolve(false);
+            return;
+          }
+          handle.focus();
+          const panel = document.querySelector(
+            'aside[aria-label="История диалогов"]'
+          );
+          const before = panel?.getBoundingClientRect().width ?? 0;
+          handle.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+          );
+          setTimeout(() => {
+            const after = panel?.getBoundingClientRect().width ?? 0;
+            resolve(after > before);
+          }, 300); // > 200ms width transition
+        }),
+      `${SEL.resizeLeft}:not([hidden])`
+    );
+    if (!kbResize) problems.push("Desktop: keyboard resize (ArrowRight) did not widen left panel");
   }
 
   // 7. Composer usable: textarea fully inside viewport
