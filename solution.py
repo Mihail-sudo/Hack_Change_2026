@@ -13,6 +13,9 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from pathlib import Path
 
+from agent.domain import B2B_PHOTO_SEGMENTS, merged_domain_slots
+from agent.guardrails import apply_required_answer_rules, safe_fallback_answer, validate_text
+
 FALLBACK_ANSWER = "Не могу ответить по доступным фрагментам базы знаний."
 MAX_ANSWER_CHARS = 10_000
 TOTAL_TIMEOUT_SECONDS = 20 * 60
@@ -101,9 +104,8 @@ def _photo_question_without_organization(query: str) -> bool:
         return False
     if not any(word in text for word in ("можно", "может", "могу", "передать", "отправить", "прислать")):
         return False
-    return not any(
-        word in text for word in ("организац", "компани", "снт", "предприят", "завод", "энергосбыт", "сетев", "тсж", "управляющ")
-    )
+    domain = merged_domain_slots({}, query)
+    return domain["segment"] not in B2B_PHOTO_SEGMENTS
 
 
 def answer_with_context(history: list[dict], message: str) -> str:
@@ -119,12 +121,47 @@ def answer_with_context(history: list[dict], message: str) -> str:
             "показание попадает в учёт только после верификации."
         )
     catalog = search_catalog(query)
+    system_content = solution_prompt().replace("{catalog}", catalog, 1)
     messages = [
-        {"role": "system", "content": solution_prompt().replace("{catalog}", catalog, 1)},
+        {"role": "system", "content": system_content},
         *visible,
         {"role": "user", "content": message},
     ]
-    return call_llm(messages, temperature=float(os.environ.get("TEMPERATURE", "0.0"))).strip()
+    temperature = float(os.environ.get("TEMPERATURE", "0.0"))
+    answer = call_llm(messages, temperature=temperature).strip()
+    violations = validate_text(answer)
+    needs_review = bool(violations)
+    if not needs_review:
+        answer = apply_required_answer_rules(query, answer)
+        remaining = validate_text(answer)
+        if remaining:
+            logger.error("Пакетный ответ отклонён правилами: %s", [item["rule_id"] for item in remaining])
+            return safe_fallback_answer(query)
+        return answer
+    rule_ids = sorted({item["rule_id"] for item in violations} | {"REQUIRED_FACT_COVERAGE"})
+    if violations:
+        logger.warning("Пакетный ответ требует исправления: %s", rule_ids)
+    repair = (
+        "Проверь ответ по правилу REQUIRED_FACT_COVERAGE: восстанови все необходимые для полного "
+        "ответа факты, числа, единицы, ограничения и оговорки из контекста, а также один полезный "
+        "следующий шаг. Дополнительно исправь только нарушения правил " + ", ".join(rule_ids) +
+        ". Для ОРЭМ различай 750 кВт и 20 МВт, для проекта больше 500 кВт назови индивидуальную "
+        "оценку специалистом, для SIM-карт не требуй замену только из-за оператора при совместимых приборах. "
+        "Сохрани все независимые корректные факты и не сокращай ответ ради краткости. "
+        "Не добавляй новые сведения и не меняй стиль. Если нарушение нельзя исправить по контексту, "
+        "прямо скажи, что подтверждённого ответа нет.\n\n"
+        f"Вопрос:\n{message}\n\nИсходный ответ:\n{answer}"
+    )
+    repaired = call_llm(
+        [{"role": "system", "content": system_content}, {"role": "user", "content": repair}],
+        temperature=0,
+    ).strip()
+    repaired = apply_required_answer_rules(query, repaired)
+    remaining = validate_text(repaired)
+    if remaining:
+        logger.error("Пакетный ответ отклонён правилами: %s", [item["rule_id"] for item in remaining])
+        return safe_fallback_answer(query)
+    return repaired
 
 
 def answer_question(row: dict) -> dict:

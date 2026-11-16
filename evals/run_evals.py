@@ -97,6 +97,9 @@ def evaluate(case: dict, reference: str, use_judge: bool, solution_mode: bool = 
     reply = result["reply"]
     lower = reply.lower()
     products = [item["product_id"] for item in result["recommended"]]
+    configurations = {
+        item["product_id"]: item.get("configuration") for item in result["recommended"]
+    }
     checks = [required.lower() in lower for required in case.get("required", [])]
     checks += [
         any(alternative.lower() in lower for alternative in case["required_any"])
@@ -105,6 +108,10 @@ def evaluate(case: dict, reference: str, use_judge: bool, solution_mode: bool = 
     checks += [forbidden.lower() not in lower for forbidden in case.get("forbidden", [])]
     checks += [product in products for product in case.get("expected_products", [])]
     checks += [product not in products for product in case.get("forbidden_products", [])]
+    checks += [
+        configurations.get(product) == configuration
+        for product, configuration in case.get("expected_configurations", {}).items()
+    ]
     if case.get("expected_action"):
         checks.append(result["action"]["type"] == case["expected_action"])
 
@@ -116,6 +123,7 @@ def evaluate(case: dict, reference: str, use_judge: bool, solution_mode: bool = 
         "words": len(reply.split()),
         "action": result["action"]["type"],
         "products": products,
+        "configurations": configurations,
         "sources": result["sources"],
         "reply": reply,
         "reference": reference or None,
@@ -142,7 +150,7 @@ def write_results(items: list[dict], output: Path) -> None:
         json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     with output.with_suffix(".csv").open("w", encoding="utf-8", newline="") as file:
-        fields = ["id", "passed", "seconds", "words", "action", "products", "judge_score", "reply"]
+        fields = ["id", "passed", "seconds", "words", "action", "products", "configurations", "judge_score", "reply"]
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writeheader()
         for item in items:

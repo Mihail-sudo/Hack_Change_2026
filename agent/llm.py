@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://polza.ai/api/v1"
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-TIMEOUT = 20
-MAX_ATTEMPTS = 3
+TIMEOUT = 4
+MAX_ATTEMPTS = 1
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 

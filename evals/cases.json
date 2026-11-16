@@ -21,13 +21,22 @@
   {
     "id": "solar-autonomy",
     "question": "Нужна солнечная станция, чтобы производство работало при отключении внешней сети.",
-    "required": ["гибрид"],
-    "expected_products": ["solar"]
+    "required": ["гибрид", "отключ"],
+    "expected_products": ["solar"],
+    "expected_configurations": {"solar": "hybrid"},
+    "forbidden": ["сетевая станция обеспечит питание при отключении"]
   },
   {
-    "id": "meter-photo",
-    "question": "Можно ли передавать показания электросчётчиков по фото?",
-    "required": ["фото"],
+    "id": "meter-photo-private",
+    "question": "Я частный абонент. Можно ли передавать показания электросчётчика напрямую через МТС по фото?",
+    "required": ["верификац"],
+    "required_any": ["частн", "организац", "напрямую"],
+    "forbidden_products": ["meter_photo"]
+  },
+  {
+    "id": "meter-photo-b2b",
+    "question": "Мы управляющая компания. Можно ли использовать фото счётчиков жителей для передачи показаний?",
+    "required": ["фото", "верификац"],
     "expected_products": ["meter_photo"]
   },
   {

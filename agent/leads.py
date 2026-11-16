@@ -1,25 +1,11 @@
 """Формирование заявки менеджеру без дополнительного вызова LLM."""
 
+from agent.domain import consent_message_is_valid, normalize_segment
 from agent.state import contacts_complete, merge_slots, new_state
 
 
 def _segment(value: str | None) -> str:
-    text = (value or "").lower()
-    if "снт" in text or "товариществ" in text:
-        return "snt"
-    if "энергосбыт" in text or "гарантирующ" in text:
-        return "energy_sales"
-    if "сетев" in text:
-        return "grid"
-    if "водоканал" in text:
-        return "vodokanal"
-    if "управляющ" in text or "тсж" in text or "жкх" in text:
-        return "uk"
-    if any(word in text for word in ("кафе", "магазин", "офис", "бизнес", "ретейл", "склад")):
-        return "business"
-    if "производ" in text or "промыш" in text or "завод" in text:
-        return "industry"
-    return "other"
+    return normalize_segment(value)
 
 
 def fallback_brief(slots: dict) -> str:
@@ -35,10 +21,16 @@ def build_lead(state: dict | None, contact: dict, source: str = "form") -> dict:
     if "name" in incoming and "full_name" not in incoming:
         incoming["full_name"] = incoming["name"]
     slots = merge_slots(slots, incoming)
-    if not contacts_complete(slots):
-        raise ValueError("Для заявки нужны ФИО, телефон, компания и согласие на обработку персональных данных")
+    history = list(state.get("history") or [])
+    if source == "form" and incoming.get("consent_pd") is True:
+        consent_text = incoming.get("consent_text", "").strip()
+        if consent_message_is_valid(consent_text):
+            slots["consent_evidence"] = consent_text
+            slots["consent_revoked"] = False
+            history.append({"role": "user", "content": consent_text})
+    if not contacts_complete(slots, history):
+        raise ValueError("Для заявки нужны ФИО, телефон, компания и доказанное действующее согласие")
 
-    history = state.get("history") or []
     summary = state.get("manager_brief") or fallback_brief(slots)
     return {
         "lead_id": None,
@@ -54,7 +46,7 @@ def build_lead(state: dict | None, contact: dict, source: str = "form") -> dict:
             "preferred_channel": "телефон",
         },
         "consent_pd": True,
-        "segment": _segment(slots.get("organization_type")),
+        "segment": _segment(slots.get("segment") or slots.get("organization_type")),
         "problem": slots.get("task") or "",
         "slots": slots,
         "recommended": list(state.get("recommended") or []),

@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-AGENT_MODULES = ["agent.py", "catalog.py", "dialogue.py", "leads.py", "llm.py", "recommendations.py", "state.py"]
+AGENT_MODULES = ["agent.py", "catalog.py", "dialogue.py", "domain.py", "guardrails.py", "leads.py", "llm.py", "recommendations.py", "state.py"]
 PROMPT_REPLACEMENT = '''def _prompt_template(path: Path) -> str:
     if path.name == "system.md":
         return SYSTEM_PROMPT
