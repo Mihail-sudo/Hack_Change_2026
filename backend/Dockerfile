@@ -15,7 +15,8 @@ COPY backend ./backend
 COPY agent ./agent
 RUN uv sync --frozen --no-dev
 
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app/agent:/app"
 
 EXPOSE 8000
 

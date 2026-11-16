@@ -1,8 +1,6 @@
 import logging
-import random
 
-# Временно отключено: настоящий агент вернётся, когда бэкенд будет готов к интеграции.
-# from agent import respond as agent_respond
+from agent import respond as agent_respond
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from fastapi.concurrency import run_in_threadpool
 
@@ -14,6 +12,7 @@ from app.schemas import (
     ChatResponse,
     HandoffRequest,
     HandoffResponse,
+    LeadCreate,
     MessagesRead,
     SessionRead,
     SessionResetRequest,
@@ -26,28 +25,11 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
-FALLBACK_REPLY = (
-    "Извините, сейчас не получается ответить. "
-    "Оставьте, пожалуйста, телефон, и менеджер свяжется с вами."
-)
+FALLBACK_REPLY = "Извините, сейчас не получается продолжить из-за технической ошибки. Контактные данные не требуются."
 
 
-def _stub_respond(message: str, state: dict | None) -> dict:
-    """Заглушка вместо агента: возвращает слова пользователя в случайном порядке."""
-    words = message.split()
-    random.shuffle(words)
-    reply = " ".join(words)
-
-    history = list((state or {}).get("history") or [])
-    history.append({"role": "user", "content": message})
-    history.append({"role": "assistant", "content": reply})
-
-    return {
-        "reply": reply,
-        "state": {"history": history, "done": False},
-        "actions": [],
-        "done": False,
-    }
+def _agent_respond(message: str, state: dict | None) -> dict:
+    return agent_respond(message, state)
 
 
 def append_history(state: dict | None, role: str, content: str) -> dict:
@@ -91,7 +73,7 @@ async def chat(
         return ChatResponse(reply="", done=False, mode="admin")
 
     try:
-        result = await run_in_threadpool(_stub_respond, payload.message, state)
+        result = await run_in_threadpool(_agent_respond, payload.message, state)
     except Exception:
         logger.exception("Агент упал в сессии %s", payload.session_id)
         db.append_message(
@@ -122,6 +104,18 @@ async def chat(
             payload.session_id,
             action.get("type"),
         )
+        if action.get("type") == "handoff" and isinstance(action.get("lead"), dict):
+            lead = action["lead"]
+            contact = lead.get("contact") or {}
+            phone = contact.get("phone")
+            email = contact.get("email")
+            if phone or email:
+                db.create_lead(LeadCreate(
+                    question=lead.get("problem") or lead.get("summary") or "Заявка из чата",
+                    name=contact.get("name"),
+                    contact=phone or email,
+                    contact_type="phone" if phone else "email",
+                ))
 
     reply = str(result.get("reply") or "")
     db.append_message(payload.session_id, role="assistant", author="bot", content=reply)

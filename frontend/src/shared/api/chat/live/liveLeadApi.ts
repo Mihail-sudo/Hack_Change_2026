@@ -1,21 +1,30 @@
-import { ApiClientError } from "@/shared/api/apiClient";
-import type { LeadApi, SubmitLeadRequest } from "../leadApi";
+import { apiClient } from "@/shared/api/apiClient";
+import type { LeadApi } from "../leadApi";
 
-/**
- * Заготовка live-реализации. Конкретные endpoint'ы НЕ согласованы с backend.
- * При попытке использования выбрасывает понятную ошибку.
- */
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+
+type LeadResponse = {
+  id: number;
+  status: string;
+  created_at: string;
+};
+
 export function createLiveLeadApi(): LeadApi {
-  const notAvailable = (): never => {
-    throw new ApiClientError(
-      "SERVER_ERROR",
-      "Backend заявок ещё не подключён. Используйте mock-режим.",
-      501
-    );
-  };
-
   return {
     mode: "live",
-    submitLead: (_request: SubmitLeadRequest) => notAvailable(),
+
+    async submitLead(request, signal) {
+      const response = await apiClient<LeadResponse>(`${API_BASE}/leads`, {
+        method: "POST",
+        body: JSON.stringify({
+          question: request.summary || request.need,
+          name: request.fullName,
+          contact: request.phone,
+          contact_type: "phone",
+        }),
+        signal,
+      });
+      return { leadId: String(response.id), success: true };
+    },
   };
 }

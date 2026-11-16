@@ -4,10 +4,7 @@ export interface SendMessageOptions extends SendMessageRequest {
   signal?: AbortSignal;
 }
 
-/**
- * Контракт общения UI с backend/AI-сервисом. Реальная реализация появится
- * после согласования API с backend-командой; пока используется mock.
- */
+/** Контракт общения UI с backend/AI-сервисом или демонстрационным mock. */
 export interface ChatApi {
   /** "mock" — ответы генерирует локальная заглушка, а не реальный ИИ. */
   readonly mode: "mock" | "live";
