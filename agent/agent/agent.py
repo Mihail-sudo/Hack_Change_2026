@@ -9,7 +9,7 @@ from agent.catalog import search_catalog
 from agent.dialogue import RESPONSE_FORMAT, AgentResponseError, parse_response
 from agent.leads import build_lead, fallback_brief
 from agent.llm import LLMError, call_llm
-from agent.recommendations import fallback_recommendation_reply, filter_recommendations
+from agent.recommendations import fallback_recommendation_reply, filter_recommendations, infer_recommendations
 from agent.state import contacts_complete, merge_slots, normalize_state
 
 logger = logging.getLogger(__name__)
@@ -187,15 +187,22 @@ def respond(message: str, state: dict | None, *, system_prompt: str = "") -> dic
         return _fallback(current)
 
     slots = merge_slots(current["slots"], parsed["slots"])
-    recommended, dropped = filter_recommendations(parsed["recommended"], slots)
     action_type = parsed["action"]
     reply = parsed["reply"]
+    suggested = parsed["recommended"] or infer_recommendations(reply, slots)
+    recommended, dropped = filter_recommendations(suggested, slots)
     brief = parsed.get("manager_brief") or current["manager_brief"]
     if dropped:
         reply = fallback_recommendation_reply(recommended, dropped, slots)
         brief = fallback_brief(slots)
         if not recommended and action_type in {"answer", "show_form"}:
             action_type = "clarify"
+    if any(item["product_id"] == "meter_photo" for item in recommended) and not slots.get("organization_type"):
+        reply = (
+            "Нет, для частного абонента такой передачи показаний через МТС нет. "
+            "Распознавание показаний по фотографии — решение для организаций, "
+            "а показание попадает в учёт только после верификации."
+        )
 
     human_request = bool(HUMAN_REQUEST_RE.search(text))
     contact_refusal = bool(CONTACT_REFUSAL_RE.search(text))
